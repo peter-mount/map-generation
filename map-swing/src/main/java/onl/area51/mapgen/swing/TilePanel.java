@@ -29,6 +29,7 @@ import javax.swing.SwingUtilities;
 import onl.area51.mapgen.tilecache.TileCache;
 import onl.area51.mapgen.renderer.DefaultRenderer;
 import onl.area51.mapgen.renderer.Renderer;
+import onl.area51.mapgen.renderers.GridRenderer;
 import onl.area51.mapgen.tilecache.MapPreset;
 
 /**
@@ -41,7 +42,7 @@ public class TilePanel
 
     private boolean showGrid;
     private int zoom;
-
+    private final Consumer<Renderer> gridRenderer = new GridRenderer( true );
     private Consumer<String> mapNotifier;
     private Consumer<Renderer> renderer;
 
@@ -148,8 +149,15 @@ public class TilePanel
             System.out.println( "t render" );
             Renderer r = new DefaultRenderer( g, this, getZoom() );
             System.out.println( "t apply" );
-            r.forEach( renderer );
+            r.forEach( renderer
+                    .andThen( r1 -> {
+                        if( isShowGrid() ) {
+                            gridRenderer.accept( r1 );
+                        }
+                    } )
+            );
             System.out.println( "t fi" );
+
 
             g.setClip( ccache );
         }

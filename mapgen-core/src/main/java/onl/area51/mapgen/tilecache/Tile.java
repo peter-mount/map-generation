@@ -100,7 +100,7 @@ public class Tile
     @Override
     public String toString()
     {
-        return "Tile[x=" + x + ", y=" + y + ", imagePresent=" + isImagePresent() + ']';
+        return "Tile[z=" + z + ",x=" + x + ",y=" + y + ",server=" + server + ",imagePresent=" + isImagePresent() + ",error=" + isError() + ']';
     }
 
     @Override

@@ -28,8 +28,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.Exchanger;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -80,9 +83,55 @@ public enum TileCache
         );
     }
 
+    public Tile getTileSync( MapTileServer server, int zoom, int x, int y ) throws InterruptedException, TimeoutException
+    {
+        Exchanger<Tile> ex = new Exchanger<>();
+        Tile tile = getTile( server, zoom, x, y, t -> {
+            try {
+                // Give up if the outer thread is not responding after 1 second
+                ex.exchange( t, 1, TimeUnit.SECONDS );
+            }
+            catch( InterruptedException |
+                   TimeoutException ex1 ) {
+                throw new RuntimeException( ex1 );
+            }
+        } );
+
+        if( tile == null || (!tile.isImagePresent() && !tile.isError()) ) {
+            // Allow up to 10 seconds for a slow remote server
+            tile = ex.exchange( null, 10, TimeUnit.SECONDS );
+        }
+
+        return tile;
+    }
+    
     /**
      * Retrieve a tile from the cache
      * <p>
+     * @param server
+     * @param zoom
+     * @param x      X
+     * @param y      Y
+     * <p>
+     * @return Tile or null if x,y is invalid for this zoom
+     */
+    public Tile getTile( MapTileServer server, int zoom, int x, int y )
+    {
+        return getTile( server, zoom, x, y, t -> {
+        }, ( t, e ) -> {
+        } );
+    }
+
+    public Tile getTile( MapTileServer server, int zoom, int x, int y, Consumer<Tile> notifier )
+    {
+        return getTile( server, zoom, x, y, notifier, ( t, e ) -> notifier.accept( t ) );
+    }
+
+    /**
+     * Retrieve a tile from the cache
+     * <p>
+     * @param server
+     * @param zoom
      * @param x       X
      * @param y       Y
      * @param success Consumer to be called when a tile has been retrieved from an external source

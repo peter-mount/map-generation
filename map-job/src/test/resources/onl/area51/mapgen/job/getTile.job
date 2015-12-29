@@ -1,0 +1,13 @@
+// Test map tile retrieval
+job "getTile";
+run as "test";
+{
+    // UK & Ire zoom 6, x 30..32, y 18..21
+    tile = retrieveMapTile("OpenStreetMap",6,31,21);
+    log tile!=null;
+    log tile.getZ();
+    log tile.getX();
+    log tile.getY();
+    log tile.isImagePresent();
+
+}

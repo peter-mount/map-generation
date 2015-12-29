@@ -15,6 +15,8 @@
  */
 package onl.area51.mapgen.tilecache;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 
@@ -35,6 +37,20 @@ public enum MapTileServer
     private final int minZoom;
     private final int maxZoom;
 
+    private static final Map<String, MapTileServer> SERVERS = new ConcurrentHashMap<>();
+
+    static {
+        for( MapTileServer s: values() ) {
+            SERVERS.put( s.name().toUpperCase(), s );
+            SERVERS.put( s.getTitle().toUpperCase(), s );
+        }
+    }
+
+    public static MapTileServer lookup( String name )
+    {
+        return name == null || name.isEmpty() ? OPEN_STREET_MAP : SERVERS.getOrDefault( name.trim().toUpperCase(), OPEN_STREET_MAP );
+    }
+
     public static ComboBoxModel newComboBoxModel()
     {
         return new DefaultComboBoxModel( MapTileServer.values() );
@@ -47,6 +63,11 @@ public enum MapTileServer
         this.layout = layout;
         this.minZoom = minZoom;
         this.maxZoom = maxZoom;
+    }
+
+    public String getTitle()
+    {
+        return title;
     }
 
     @Override
