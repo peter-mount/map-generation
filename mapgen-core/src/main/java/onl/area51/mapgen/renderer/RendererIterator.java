@@ -83,7 +83,13 @@ class RendererIterator
         if( y <= wrapper.getBottom() && x <= wrapper.getRight() ) {
             return wrapper;
         }
-        throw new NoSuchElementException();
+        throw new NoSuchElementException(
+                String.format( "No such tile (%d,%d) in bounds (%d,%d,%d,%d)",
+                               x, y,
+                               wrapper.getLeft(), wrapper.getTop(),
+                               wrapper.getRight(), wrapper.getBottom()
+                )
+        );
     }
 
 }
