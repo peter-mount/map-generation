@@ -23,6 +23,7 @@ import java.awt.Paint;
 import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.image.ImageObserver;
 
 /**
  *
@@ -37,6 +38,8 @@ public interface GraphicsExt
      * @return
      */
     Graphics getGraphics();
+    
+    ImageObserver getImageObserver();
 
     default Graphics2D getGraphics2D()
     {

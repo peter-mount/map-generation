@@ -17,6 +17,7 @@ package onl.area51.mapgen.renderer;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.image.ImageObserver;
 import java.util.Iterator;
 
 /**
@@ -30,15 +31,17 @@ public abstract class AbstractRenderer
 
     private final Graphics graphics;
     private final Rectangle visible;
+    private final ImageObserver imageObserver;
     private final int zoom;
 
     private final int left, top, right, bottom, maxXY;
 
-    public AbstractRenderer( Graphics graphics, Rectangle visible, int zoom )
+    public AbstractRenderer( Graphics graphics, Rectangle visible, ImageObserver imageObserver, int zoom )
     {
         this.graphics = graphics;
         this.zoom = zoom;
         this.visible = visible;
+        this.imageObserver = imageObserver;
 
         // Max tile on each azis (exclusive) so range is 0 .. maxXY-1
         maxXY = 1 << getZoom();
@@ -47,6 +50,12 @@ public abstract class AbstractRenderer
         top = visible.y / TILE_SIZE;
         right = Math.min( left + (visible.width / TILE_SIZE) + 2, maxXY ) - 1;
         bottom = Math.min( top + (visible.height / TILE_SIZE) + 2, maxXY ) - 1;
+    }
+
+    @Override
+    public final ImageObserver getImageObserver()
+    {
+        return imageObserver;
     }
 
     @Override

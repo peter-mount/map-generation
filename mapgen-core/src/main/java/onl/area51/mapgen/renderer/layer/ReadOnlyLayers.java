@@ -13,50 +13,59 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package onl.area51.mapgen.renderer;
-
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.image.ImageObserver;
+package onl.area51.mapgen.renderer.layer;
 
 /**
  *
  * @author peter
  */
-public final class MutableRenderer
-        extends AbstractRenderer
+public class ReadOnlyLayers
+        extends LayersWrapper
 {
 
-    private int x;
-    private int y;
-
-    public MutableRenderer( Graphics graphics, Rectangle visible, ImageObserver imageObserver, int zoom )
+    public ReadOnlyLayers( Layers layers )
     {
-        super( graphics, visible, imageObserver, zoom );
+        super( layers );
     }
 
     @Override
-    public int getX()
+    public final void moveDown( Layer layer )
     {
-        return x;
     }
 
     @Override
-    public int getY()
+    public final void moveUp( Layer layer )
     {
-        return y;
     }
 
     @Override
-    public void setY( int y )
+    public final void add( int index, Layer element )
     {
-        this.y = Math.max( 0, Math.min( getMaxXY(), y ) );
     }
 
     @Override
-    public void setX( int x )
+    public final void add( Layer layer )
     {
-        this.x = Math.max( 0, Math.min( getMaxXY(), x ) );
+    }
+
+    @Override
+    public final void remove( Layer layer )
+    {
+    }
+
+    @Override
+    public final void clear()
+    {
+    }
+
+    @Override
+    public final void addLast( Layer e )
+    {
+    }
+
+    @Override
+    public final void addFirst( Layer e )
+    {
     }
 
 }

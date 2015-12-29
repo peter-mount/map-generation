@@ -27,7 +27,7 @@ import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.WeakHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
@@ -48,45 +48,36 @@ public enum TileCache
     INSTANCE;
 
     private static final Logger LOG = Logger.getLogger( TileCache.class.getName() );
-    private final Map<Long, Tile> tiles = new ConcurrentHashMap<>();
-
-    private MapTileServer server = MapTileServer.OPEN_STREET_MAP;
-    private int zoom = 2;
+    private final Map<Long, Tile> tiles = new WeakHashMap<>();
 
     private final Executor executor;
+    private final Path cacheDirectory;
 
     private TileCache()
     {
         executor = Executors.newSingleThreadExecutor();
-    }
 
-    public void setServer( MapTileServer server )
-    {
-        this.server = server;
-        tiles.clear();
-    }
-
-    public MapTileServer getServer()
-    {
-        return server;
-    }
-
-    public int getZoom()
-    {
-        return zoom;
-    }
-
-    public void setZoom( int zoom )
-    {
-        if( this.zoom != zoom ) {
-            this.zoom = zoom;
-            tiles.clear();
+        final String customDir = System.getProperty( "tilecache.directory" );
+        if( customDir == null || customDir.isEmpty() ) {
+            cacheDirectory = Paths.get( System.getProperty( "user.home" ), ".area51", "tileCache" );
         }
+        else {
+            cacheDirectory = Paths.get( customDir );
+        }
+
     }
 
     public void clear()
     {
         tiles.clear();
+    }
+
+    private synchronized Tile getCacheEntry( MapTileServer server, int zoom, int x, int y )
+    {
+        final long max = 1L << zoom;
+        return tiles.computeIfAbsent( (((zoom * max) + x) * max + y) * 100 + server.ordinal(),
+                                      index -> new Tile( index, server, zoom, x, y )
+        );
     }
 
     /**
@@ -99,16 +90,15 @@ public enum TileCache
      * <p>
      * @return Tile or null if x,y is invalid for this zoom
      */
-    public Tile getTile( int x, int y, Consumer<Tile> success, BiConsumer<Tile, Exception> fail )
+    public Tile getTile( MapTileServer server, int zoom, int x, int y, Consumer<Tile> success, BiConsumer<Tile, Exception> fail )
     {
-        final int zoom = this.zoom;
         final long max = 1L << zoom;
         final long lx = (long) x, ly = (long) y;
         if( lx < 0 || lx >= max || ly < 0 || ly >= max ) {
             return null;
         }
 
-        final Tile tile = tiles.computeIfAbsent( lx * max + ly, index -> new Tile( zoom, x, y ) );
+        final Tile tile = getCacheEntry( server, zoom, x, y );
 
         // If no image but not pending (retrieving) or in error then background thread to retrieve it
         if( !tile.isImagePresent() && !tile.isError() && !tile.isPending() ) {
@@ -171,7 +161,7 @@ public enum TileCache
     private Path getPath( final Tile tile )
     {
         String name = String.join( "_",
-                                   server.toString(),
+                                   tile.getServer().toString(),
                                    String.valueOf( tile.getZ() ),
                                    String.valueOf( tile.getX() ),
                                    String.valueOf( tile.getY() ) ) + ".png";
@@ -180,9 +170,10 @@ public enum TileCache
         byte b[] = md5( name );
         String p1 = hex( b[0] ), p2 = hex( b[1] ).substring( 0, 1 );
 
-        Path path = Paths.get( System.getProperty( "user.home" ), ".area51", "tileCache", p1.substring( 0, 1 ), p1, p1 + p2, name );
-
-        return path;
+        return cacheDirectory.resolve( p1.substring( 0, 1 ) )
+                .resolve( p1 )
+                .resolve( p1 + p2 )
+                .resolve( name );
     }
 
     private void loadTile( final Tile tile )
@@ -206,7 +197,7 @@ public enum TileCache
             tile.setPending( true );
             Path path = getPath( tile );
 
-            URL url = new URL( server.getTileUrl( tile.getZ(), tile.getX(), tile.getY() ) );
+            URL url = new URL( tile.getServer().getTileUrl( tile ) );
             LOG.log( Level.INFO, () -> "Retrieving " + url );
 
             URLConnection con = url.openConnection();

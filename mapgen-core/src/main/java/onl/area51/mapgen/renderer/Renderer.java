@@ -18,7 +18,6 @@ package onl.area51.mapgen.renderer;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.image.ImageObserver;
 import java.util.function.Consumer;
 import static onl.area51.mapgen.renderer.AbstractRenderer.TILE_SIZE;
 
@@ -38,7 +37,8 @@ public interface Renderer
      * <p>
      * @param action
      */
-    default void foreach( Consumer<Renderer> action )
+    @Override
+    default void forEach( Consumer<? super Renderer> action )
     {
         iterator().forEachRemaining( action );
     }
@@ -48,7 +48,7 @@ public interface Renderer
      * <p>
      * @param action
      */
-    default void render( Consumer<Renderer> action )
+    default void render( Consumer<? super Renderer> action )
     {
         if( isVisible() ) {
             action.accept( this );
@@ -163,23 +163,23 @@ public interface Renderer
      */
     void setY( int y );
 
-    default void drawImage( Image image, ImageObserver imageObserver )
+    default void drawImage( Image image )
     {
-        drawImage( image, TILE_SIZE, TILE_SIZE, imageObserver );
+        drawImage( image, TILE_SIZE, TILE_SIZE );
     }
 
-    default void drawImage( Image image, Color background, ImageObserver imageObserver )
+    default void drawImage( Image image, Color background )
     {
-        drawImage( image, TILE_SIZE, TILE_SIZE, background, imageObserver );
+        drawImage( image, TILE_SIZE, TILE_SIZE, background );
     }
 
-    default void drawImage( Image image, int w, int h, ImageObserver imageObserver )
+    default void drawImage( Image image, int w, int h )
     {
-        getGraphics().drawImage( image, getXp(), getYp(), w, h, imageObserver );
+        getGraphics().drawImage( image, getXp(), getYp(), w, h, getImageObserver() );
     }
 
-    default void drawImage( Image image, int w, int h, Color background, ImageObserver imageObserver )
+    default void drawImage( Image image, int w, int h, Color background )
     {
-        getGraphics().drawImage( image, getXp(), getYp(), w, h, background, imageObserver );
+        getGraphics().drawImage( image, getXp(), getYp(), w, h, background, getImageObserver() );
     }
 }

@@ -17,6 +17,8 @@ package onl.area51.mapgen.renderer;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.image.ImageObserver;
+import javax.swing.JComponent;
 
 /**
  *
@@ -26,9 +28,14 @@ public final class DefaultRenderer
         extends AbstractRenderer
 {
 
-    public DefaultRenderer( Graphics graphics, Rectangle visible, int zoom )
+    public DefaultRenderer( Graphics g, JComponent c, int zoom )
     {
-        super( graphics, visible, zoom );
+        super( g, c.getVisibleRect(), c, zoom );
+    }
+
+    public DefaultRenderer( Graphics graphics, Rectangle visible, ImageObserver imageObserver, int zoom )
+    {
+        super( graphics, visible, imageObserver, zoom );
     }
 
     @Override

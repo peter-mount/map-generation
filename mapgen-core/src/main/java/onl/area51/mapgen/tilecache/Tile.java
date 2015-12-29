@@ -24,16 +24,27 @@ import java.awt.Image;
 public class Tile
 {
 
+    private final long id;
+    private final int hash;
+    private final MapTileServer server;
     private final int z, x, y;
     private Image image;
     private boolean error;
     private boolean pending;
 
-    public Tile( int z, int x, int y )
+    public Tile( long id, MapTileServer server, int z, int x, int y )
     {
+        this.id = id;
+        hash = 97 * 7 + (int) (id ^ (id >>> 32));
+        this.server = server;
         this.z = z;
         this.x = x;
         this.y = y;
+    }
+
+    public MapTileServer getServer()
+    {
+        return server;
     }
 
     public int getZ()
@@ -90,6 +101,22 @@ public class Tile
     public String toString()
     {
         return "Tile[x=" + x + ", y=" + y + ", imagePresent=" + isImagePresent() + ']';
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return hash;
+    }
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        if( obj == null || getClass() != obj.getClass() ) {
+            return false;
+        }
+        final Tile other = (Tile) obj;
+        return this.id == other.id;
     }
 
 }

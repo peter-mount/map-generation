@@ -21,11 +21,11 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Shape;
+import java.util.function.Consumer;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
-import onl.area51.mapgen.tilecache.Tile;
 import onl.area51.mapgen.tilecache.TileCache;
 import onl.area51.mapgen.renderer.DefaultRenderer;
 import onl.area51.mapgen.renderer.Renderer;
@@ -40,6 +40,10 @@ public class TilePanel
 {
 
     private boolean showGrid;
+    private int zoom;
+
+    private Consumer<String> mapNotifier;
+    private Consumer<Renderer> renderer;
 
     public TilePanel()
     {
@@ -56,17 +60,58 @@ public class TilePanel
         return showGrid;
     }
 
+    public int getZoom()
+    {
+        return zoom;
+    }
+
+    public void setZoom( int zoom )
+    {
+        this.zoom = zoom;
+    }
+
+    /**
+     * If not null a consumer that is informed of the map specifications for the displayed map
+     * <p>
+     * @return
+     */
+    public Consumer<String> getMapNotifier()
+    {
+        return mapNotifier;
+    }
+
+    /**
+     * If not null a consumer that is informed of the map specifications for the displayed map
+     * <p>
+     * @param mapNotifier
+     */
+    public void setMapNotifier( Consumer<String> mapNotifier )
+    {
+        this.mapNotifier = mapNotifier;
+    }
+
+    public Consumer<Renderer> getRenderer()
+    {
+        return renderer;
+    }
+
+    public void setRenderer( Consumer<Renderer> renderer )
+    {
+        this.renderer = renderer;
+    }
+
     /**
      * Called when something changes like the Zoom or Underlying map
      */
     public void repaintMap()
     {
+        System.out.println( "Repaint" );
         setPreset( null );
     }
 
     public void setPreset( MapPreset preset )
     {
-        int x = Renderer.TILE_SIZE * (1 << TileCache.INSTANCE.getZoom());
+        int x = Renderer.TILE_SIZE * (1 << getZoom());
         Dimension d = new Dimension( x, x );
         setMaximumSize( d );
         setPreferredSize( d );
@@ -88,41 +133,26 @@ public class TilePanel
         super.paintComponent( g );
 
         // Shows the current position which can be used to generate predefined views
-//        JScrollPane p = (JScrollPane) SwingUtilities.getAncestorOfClass( JScrollPane.class, this );
-//        Point pt = p.getViewport().getViewPosition();
-//        SwingUtils.setStatus( "zoom=%s x=%d y=%d", TileCache.INSTANCE.getZoom(), pt.x, pt.y );
+        if( mapNotifier != null ) {
+            System.out.println( "t notify" );
+            JViewport p = ((JScrollPane) SwingUtilities.getAncestorOfClass( JScrollPane.class, this )).getViewport();
+            Point pt = p.getViewPosition();
+            mapNotifier.accept( String.format( "zoom=%s x=%d y=%d size=%s ret=%s",
+                                               getZoom(), pt.x, pt.y,
+                                               p.getViewSize(),
+                                               p.getViewRect() ) );
+        }
 
-        Shape ccache = g.getClip();
-        Renderer renderer = new DefaultRenderer( g, getVisibleRect(), TileCache.INSTANCE.getZoom() );
-        renderer.foreach( this::paintTile );
+        if( renderer != null ) {
+            Shape ccache = g.getClip();
+            System.out.println( "t render" );
+            Renderer r = new DefaultRenderer( g, this, getZoom() );
+            System.out.println( "t apply" );
+            r.forEach( renderer );
+            System.out.println( "t fi" );
 
-        g.setClip( ccache );
-    }
-
-    private void paintTile( Renderer r )
-    {
-        Graphics g = r.getGraphics();
-
-        Tile tile = TileCache.INSTANCE.getTile( r.getX(), r.getY(), t -> repaint(), ( t, e ) -> repaint() );
-        if( tile != null ) {
-            if( tile.isImagePresent() ) {
-                r.drawImage( tile.getImage(), getBackground(), this );
-            }
-
-            if( !tile.isImagePresent() || isShowGrid() ) {
-                paintMissingTile( r );
-            }
+            g.setClip( ccache );
         }
     }
 
-    private void paintMissingTile( Renderer r )
-    {
-        int xp = r.getXp(), yp = r.getYp();
-        r.setColor( Color.red );
-        r.drawRect( xp, yp, Renderer.TILE_SIZE, Renderer.TILE_SIZE );
-        setFont( getFont() );
-        r.getGraphics().drawString( String.format( "(%d,%d,%d)", r.getZoom(), r.getX(), r.getY() ),
-                                    xp + (Renderer.TILE_SIZE >>> 2),
-                                    yp + (Renderer.TILE_SIZE >>> 1) );
-    }
 }

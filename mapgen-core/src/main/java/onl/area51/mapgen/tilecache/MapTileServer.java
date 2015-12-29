@@ -70,10 +70,10 @@ public enum MapTileServer
         return maxZoom;
     }
 
-    public String getTileUrl( int z, int x, int y )
+    public String getTileUrl( Tile tile )
     {
-        return uri.replace( "%z", String.valueOf( z ) )
-                .replace( "%x", String.valueOf( x ) )
-                .replace( "%y", String.valueOf( y ) );
+        return uri.replace( "%z", String.valueOf( tile.getZ() ) )
+                .replace( "%x", String.valueOf( tile.getX() ) )
+                .replace( "%y", String.valueOf( tile.getY() ) );
     }
 }

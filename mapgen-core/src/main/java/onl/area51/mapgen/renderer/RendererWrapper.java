@@ -17,6 +17,7 @@ package onl.area51.mapgen.renderer;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.image.ImageObserver;
 import java.util.Iterator;
 
 /**
@@ -44,6 +45,12 @@ public class RendererWrapper
     public Graphics getGraphics()
     {
         return delegate.getGraphics();
+    }
+
+    @Override
+    public ImageObserver getImageObserver()
+    {
+        return delegate.getImageObserver();
     }
 
     @Override
