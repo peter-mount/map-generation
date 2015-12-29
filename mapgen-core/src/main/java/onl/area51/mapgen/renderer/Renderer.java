@@ -18,6 +18,7 @@ package onl.area51.mapgen.renderer;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.util.function.Consumer;
 import static onl.area51.mapgen.renderer.AbstractRenderer.TILE_SIZE;
 
@@ -165,21 +166,16 @@ public interface Renderer
 
     default void drawImage( Image image )
     {
-        drawImage( image, TILE_SIZE, TILE_SIZE );
-    }
-
-    default void drawImage( Image image, Color background )
-    {
-        drawImage( image, TILE_SIZE, TILE_SIZE, background );
+        AffineTransform t = new AffineTransform();
+        t.translate( getXp(), getYp());
+        getGraphics2D().drawImage( image, t, getImageObserver() );
     }
 
     default void drawImage( Image image, int w, int h )
     {
-        getGraphics().drawImage( image, getXp(), getYp(), w, h, getImageObserver() );
-    }
-
-    default void drawImage( Image image, int w, int h, Color background )
-    {
-        getGraphics().drawImage( image, getXp(), getYp(), w, h, background, getImageObserver() );
+        AffineTransform t = new AffineTransform();
+        t.scale( w, h);
+        t.translate( getXp(), getYp());
+        getGraphics2D().drawImage( image, t, getImageObserver() );
     }
 }
