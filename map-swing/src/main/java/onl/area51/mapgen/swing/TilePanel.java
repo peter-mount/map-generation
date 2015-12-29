@@ -15,22 +15,21 @@
  */
 package onl.area51.mapgen.swing;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Shape;
 import java.util.function.Consumer;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
-import onl.area51.mapgen.tilecache.TileCache;
-import onl.area51.mapgen.renderer.DefaultRenderer;
 import onl.area51.mapgen.renderer.Renderer;
+import onl.area51.mapgen.renderer.util.RendererUtils;
 import onl.area51.mapgen.renderers.GridRenderer;
 import onl.area51.mapgen.tilecache.MapPreset;
+import uk.trainwatch.util.Consumers;
 
 /**
  *
@@ -98,7 +97,7 @@ public class TilePanel
 
     public void setRenderer( Consumer<Renderer> renderer )
     {
-        this.renderer = renderer;
+        this.renderer = renderer.andThen( Consumers.ifThen( t -> showGrid, gridRenderer ) );
     }
 
     /**
@@ -106,7 +105,6 @@ public class TilePanel
      */
     public void repaintMap()
     {
-        System.out.println( "Repaint" );
         setPreset( null );
     }
 
@@ -135,7 +133,6 @@ public class TilePanel
 
         // Shows the current position which can be used to generate predefined views
         if( mapNotifier != null ) {
-            System.out.println( "t notify" );
             JViewport p = ((JScrollPane) SwingUtilities.getAncestorOfClass( JScrollPane.class, this )).getViewport();
             Point pt = p.getViewPosition();
             mapNotifier.accept( String.format( "zoom=%s x=%d y=%d size=%s ret=%s",
@@ -145,21 +142,7 @@ public class TilePanel
         }
 
         if( renderer != null ) {
-            Shape ccache = g.getClip();
-            System.out.println( "t render" );
-            Renderer r = new DefaultRenderer( g, this, getZoom() );
-            System.out.println( "t apply" );
-            r.forEach( renderer
-                    .andThen( r1 -> {
-                        if( isShowGrid() ) {
-                            gridRenderer.accept( r1 );
-                        }
-                    } )
-            );
-            System.out.println( "t fi" );
-
-
-            g.setClip( ccache );
+            RendererUtils.render( g, this, zoom, renderer );
         }
     }
 

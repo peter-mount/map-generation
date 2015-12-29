@@ -39,8 +39,9 @@ public interface Layer
         return true;
     }
 
-    default void setEnabled( boolean enabled )
+    default Layer setEnabled( boolean enabled )
     {
+        return this;
     }
 
 }

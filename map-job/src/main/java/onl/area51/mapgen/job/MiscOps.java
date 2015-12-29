@@ -15,7 +15,11 @@
  */
 package onl.area51.mapgen.job;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
+import javax.imageio.ImageIO;
 import uk.trainwatch.job.Scope;
 import uk.trainwatch.job.lang.expr.ExpressionOperation;
 
@@ -38,6 +42,12 @@ public class MiscOps
     {
         Number n = (Number) op.invoke( s );
         return n == null ? 0 : n.intValue();
+    }
+
+    public static BufferedImage getImage( ExpressionOperation op, Scope s )
+            throws Exception
+    {
+        return (BufferedImage) op.invoke( s );
     }
 
 }

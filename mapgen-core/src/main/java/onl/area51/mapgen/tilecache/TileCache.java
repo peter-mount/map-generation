@@ -23,7 +23,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
@@ -37,8 +36,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
+import onl.area51.mapgen.renderer.util.ImageUtils;
 
 /**
  * A simple in memory/disk based cache used for map tiles
@@ -83,7 +82,9 @@ public enum TileCache
         );
     }
 
-    public Tile getTileSync( MapTileServer server, int zoom, int x, int y ) throws InterruptedException, TimeoutException
+    public Tile getTileSync( MapTileServer server, int zoom, int x, int y )
+            throws InterruptedException,
+                   TimeoutException
     {
         Exchanger<Tile> ex = new Exchanger<>();
         Tile tile = getTile( server, zoom, x, y, t -> {
@@ -104,7 +105,7 @@ public enum TileCache
 
         return tile;
     }
-    
+
     /**
      * Retrieve a tile from the cache
      * <p>
@@ -227,11 +228,10 @@ public enum TileCache
 
     private void loadTile( final Tile tile )
     {
-        System.out.println( "Load tile " + getPath( tile ) );
+        Path path = getPath( tile );
+        LOG.log( Level.FINE, () -> "Load tile " + path );
         try {
-            try( InputStream is = Files.newInputStream( getPath( tile ), StandardOpenOption.READ ) ) {
-                tile.setImage( ImageIO.read( is ) );
-            }
+            tile.setImage( ImageUtils.readImage( path ) );
         }
         catch( Exception ex ) {
             tile.setImage( null );
@@ -241,7 +241,6 @@ public enum TileCache
     private void retrieveTile( final Tile tile )
             throws IOException
     {
-        System.out.println( "Load tile " + getPath( tile ) );
         try {
             tile.setPending( true );
             Path path = getPath( tile );

@@ -16,8 +16,11 @@
 package onl.area51.mapgen.renderers;
 
 import java.awt.Color;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import onl.area51.mapgen.renderer.Renderer;
 import onl.area51.mapgen.tilecache.MapTileServer;
 import onl.area51.mapgen.tilecache.Tile;
@@ -68,10 +71,28 @@ public class TileRenderer
         this.server = server;
     }
 
+    private Tile getTile( Renderer r )
+    {
+        if( r.getImageObserver() == null ) {
+            try {
+                return TileCache.INSTANCE.getTileSync( server, r.getZoom(), r.getX(), r.getY() );
+            }
+            catch( InterruptedException |
+                   TimeoutException ex ) {
+                Logger.getLogger( TileRenderer.class.getName() ).log( Level.SEVERE, null, ex );
+                throw new RuntimeException( "Failed to get tile" + server + " " + r.getZoom() + " " + r.getX() + "," + r.getY(), ex );
+            }
+        }
+        else {
+            return TileCache.INSTANCE.getTile( server, r.getZoom(), r.getX(), r.getY(), tileLoaded, tileError );
+        }
+    }
+
     @Override
     public void accept( Renderer r )
     {
-        Tile tile = TileCache.INSTANCE.getTile( server, r.getZoom(), r.getX(), r.getY(), tileLoaded, tileError );
+        //Tile tile = TileCache.INSTANCE.getTile( server, r.getZoom(), r.getX(), r.getY(), tileLoaded, tileError );
+        Tile tile = getTile( r );
         if( tile != null && tile.isImagePresent() ) {
             r.drawImage( tile.getImage() );
         }

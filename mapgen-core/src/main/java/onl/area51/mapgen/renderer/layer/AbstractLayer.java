@@ -63,9 +63,10 @@ public abstract class AbstractLayer
     }
 
     @Override
-    public final void setEnabled( boolean enabled )
+    public final Layer setEnabled( boolean enabled )
     {
         this.enabled = enabled;
+        return this;
     }
 
     @Override

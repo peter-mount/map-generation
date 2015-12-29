@@ -30,6 +30,11 @@ public final class MutableRenderer
     private int x;
     private int y;
 
+    public MutableRenderer( Graphics graphics, Rectangle visible, int zoom )
+    {
+        super( graphics, visible, null, zoom );
+    }
+
     public MutableRenderer( Graphics graphics, Rectangle visible, ImageObserver imageObserver, int zoom )
     {
         super( graphics, visible, imageObserver, zoom );

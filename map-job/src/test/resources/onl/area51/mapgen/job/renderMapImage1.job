@@ -1,0 +1,13 @@
+// Test map tile generation
+// This should generate a 1024x1024 map of the world
+job "renderMapImage1";
+run as "test";
+{
+    // UK & Ire zoom 6, x 30..32, y 18..21
+
+    baseLayer = new baseTileLayer("Open Street Map");
+
+    image = createImage(1024,1024);
+    renderMap(image,2,0,0,baseLayer);
+    writeImage(image,"worldmap.png");
+}

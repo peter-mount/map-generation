@@ -1,0 +1,14 @@
+// Test map tile generation
+// This should render a 1024x1024 map of the UK and Ireland
+job "renderMapImage2";
+run as "test";
+{
+    // UK & Ire zoom 6, x 30..32, y 18..21
+
+    baseLayer = new baseTileLayer("Open Street Map");
+
+    image = createImage(1024,1024);
+    renderMap(image,6,30,18,baseLayer);
+    file = writeImage(image,"uk.png");
+    log file;
+}

@@ -16,7 +16,9 @@
 package onl.area51.mapgen.renderer;
 
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.awt.image.ImageObserver;
 import java.util.Iterator;
 
@@ -119,4 +121,36 @@ public class RendererWrapper
         return delegate.iterator();
     }
 
+    @Override
+    public void drawImage( Image image )
+    {
+        AffineTransform t = new AffineTransform();
+        t.translate( getXp(), getYp() );
+        drawImage( image, t );
+    }
+
+    @Override
+    public void drawImage( Image image, int w, int h )
+    {
+        AffineTransform t = new AffineTransform();
+        t.scale( w, h );
+        t.translate( getXp(), getYp() );
+        drawImage( image, t );
+    }
+
+    @Override
+    public void drawImage( Image image, AffineTransform t )
+    {
+        if( getImageObserver() == null ) {
+            boolean done = false;
+            while( !done ) {
+                done = getGraphics2D().drawImage( image, t, null );
+            }
+        }
+        else {
+            getGraphics2D().drawImage( image, t, getImageObserver() );
+        }
+    }
+
+    
 }

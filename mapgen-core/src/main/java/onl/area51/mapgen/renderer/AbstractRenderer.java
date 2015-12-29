@@ -16,7 +16,9 @@
 package onl.area51.mapgen.renderer;
 
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.awt.image.ImageObserver;
 import java.util.Iterator;
 
@@ -110,6 +112,24 @@ public abstract class AbstractRenderer
     public final int getBottom()
     {
         return bottom;
+    }
+
+    @Override
+    public void drawImage( Image image )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void drawImage( Image image, int w, int h )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void drawImage( Image image, AffineTransform t )
+    {
+        throw new UnsupportedOperationException();
     }
 
 }

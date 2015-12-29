@@ -42,6 +42,7 @@ public enum MapTileServer
     static {
         for( MapTileServer s: values() ) {
             SERVERS.put( s.name().toUpperCase(), s );
+            SERVERS.put( s.name().replace( '_', ' ' ).toUpperCase(), s );
             SERVERS.put( s.getTitle().toUpperCase(), s );
         }
     }
