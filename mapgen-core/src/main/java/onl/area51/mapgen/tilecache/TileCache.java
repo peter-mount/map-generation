@@ -30,6 +30,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.Exchanger;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
@@ -86,21 +87,21 @@ public enum TileCache
             throws InterruptedException,
                    TimeoutException
     {
-        Exchanger<Tile> ex = new Exchanger<>();
+        SynchronousQueue<Tile> q = new SynchronousQueue<>();
+        //Exchanger<Tile> ex = new Exchanger<>();
         Tile tile = getTile( server, zoom, x, y, t -> {
             try {
-                // Give up if the outer thread is not responding after 1 second
-                ex.exchange( t, 1, TimeUnit.SECONDS );
+                // Give up if the outer thread is not responding. It should be waiting so don't sit here too long
+                q.offer( t, 50, TimeUnit.MILLISECONDS );
             }
-            catch( InterruptedException |
-                   TimeoutException ex1 ) {
-                throw new RuntimeException( ex1 );
+            catch( InterruptedException ex1 ) {
+                // Ignore
             }
         } );
 
         if( tile == null || (!tile.isImagePresent() && !tile.isError()) ) {
             // Allow up to 10 seconds for a slow remote server
-            tile = ex.exchange( null, 10, TimeUnit.SECONDS );
+            tile = q.poll( 10, TimeUnit.SECONDS );
         }
 
         return tile;
