@@ -10,4 +10,17 @@
     <packaging>jar</packaging>
     <name>Map Generator Core</name>
     <description>Core classes for map generation</description>
+    <dependencies>
+        <dependency>
+            <groupId>uk.trainwatch.gis</groupId>
+            <artifactId>gis-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
