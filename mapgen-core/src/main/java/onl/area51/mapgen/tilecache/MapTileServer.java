@@ -27,7 +27,7 @@ import javax.swing.DefaultComboBoxModel;
 public enum MapTileServer
 {
 
-    OPEN_STREET_MAP( "OpenStreetMap", "http://c.tile.openstreetmap.org/%z/%x/%y.png", MapTileLayout.OPEN_STREET_MAP, 0, 6 ),
+    OPEN_STREET_MAP( "OpenStreetMap", "http://c.tile.openstreetmap.org/%z/%x/%y.png", MapTileLayout.OPEN_STREET_MAP, 0, 18 ),
     OPEN_CYCLE_MAP( "OpenCycleMap", "http://a.tile.opencyclemap.org/cycle/%z/%x/%y.png", MapTileLayout.OPEN_STREET_MAP, 0, 10 ),
     MAP_QUEST( "MapQuest", "http://otile1.mqcdn.com/tiles/1.0.0/osm/%z/%x/%y.jpg", MapTileLayout.OPEN_STREET_MAP, 0, 10 );
 
