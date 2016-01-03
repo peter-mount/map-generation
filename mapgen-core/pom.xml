@@ -10,6 +10,22 @@
     <packaging>jar</packaging>
     <name>Map Generator Core</name>
     <description>Core classes for map generation</description>
+    
+    <build>
+        <plugins>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.10</version>
+                <configuration>
+                    <workingDirectory>${basedir}/target/images</workingDirectory>
+                </configuration>
+            </plugin>
+        
+        </plugins>
+    </build>
+    
     <dependencies>
         <dependency>
             <groupId>uk.trainwatch.gis</groupId>

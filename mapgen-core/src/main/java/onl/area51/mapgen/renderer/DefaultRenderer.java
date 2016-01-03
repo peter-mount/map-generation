@@ -17,6 +17,7 @@ package onl.area51.mapgen.renderer;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.ImageObserver;
 
 /**
@@ -57,6 +58,12 @@ public final class DefaultRenderer
 
     @Override
     public void setX( int x )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Rectangle2D getBounds()
     {
         throw new UnsupportedOperationException();
     }

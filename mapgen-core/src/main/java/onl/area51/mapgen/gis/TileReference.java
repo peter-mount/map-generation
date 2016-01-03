@@ -106,4 +106,31 @@ public interface TileReference
                           getBottomLeftCoordinate(),
                           getBottomRightCoordinate() );
     }
+
+    /**
+     * Is this TileReference contained by another one
+     * <p>
+     * @param t
+     *          <p>
+     * @return
+     */
+    default boolean contains( TileReference t )
+    {
+        if( getZ() != t.getZ() ) {
+            return false;
+        }
+        double x = getDecimalX(), y = getDecimalY();
+        return t.getDecimalX() >= getDecimalX() && t.getDecimalX() < (getDecimalX() + 1.0)
+               && t.getDecimalY() >= getDecimalY() && t.getDecimalY() < (getDecimalY() + 1.0);
+    }
+
+    default int getPx( double left )
+    {
+        return (int) ((getDecimalX() - left) * 256);
+    }
+
+    default int getPy( double top )
+    {
+        return (int) ((getDecimalY() - top) * 256);
+    }
 }

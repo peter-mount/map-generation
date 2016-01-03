@@ -17,6 +17,7 @@ package onl.area51.mapgen.renderer;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import onl.area51.mapgen.gis.TileReference;
 
 /**
  *
@@ -30,6 +31,7 @@ class RendererIterator
     private int x, y;
 
     private final RendererWrapper wrapper;
+    private TileReference ref;
 
     public RendererIterator( Renderer delegate )
     {
@@ -39,6 +41,7 @@ class RendererIterator
 
         wrapper = new RendererWrapper( delegate )
         {
+
             @Override
             public int getX()
             {
@@ -63,6 +66,12 @@ class RendererIterator
                 throw new UnsupportedOperationException();
             }
 
+            @Override
+            public TileReference getTileReference()
+            {
+                return ref;
+            }
+
         };
     }
 
@@ -81,6 +90,7 @@ class RendererIterator
             y++;
         }
         if( y <= wrapper.getBottom() && x <= wrapper.getRight() ) {
+            ref = TileReference.of( wrapper.getZoom(), x, y );
             return wrapper;
         }
         throw new NoSuchElementException(

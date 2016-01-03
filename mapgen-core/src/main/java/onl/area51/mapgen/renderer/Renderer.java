@@ -18,7 +18,9 @@ package onl.area51.mapgen.renderer;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.util.function.Consumer;
+import onl.area51.mapgen.gis.TileReference;
 import static onl.area51.mapgen.renderer.AbstractRenderer.TILE_SIZE;
 
 /**
@@ -162,6 +164,16 @@ public interface Renderer
      * @param y
      */
     void setY( int y );
+
+    default Rectangle2D getBounds()
+    {
+        return null;
+    }
+
+    default TileReference getTileReference()
+    {
+        return TileReference.of( getZoom(), getX(), getY() );
+    }
 
     void drawImage( Image image );
 

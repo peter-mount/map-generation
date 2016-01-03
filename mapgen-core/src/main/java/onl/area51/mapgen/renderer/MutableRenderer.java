@@ -17,6 +17,7 @@ package onl.area51.mapgen.renderer;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.ImageObserver;
 
 /**
@@ -62,6 +63,12 @@ public final class MutableRenderer
     public void setX( int x )
     {
         this.x = Math.max( 0, Math.min( getMaxXY(), x ) );
+    }
+
+    @Override
+    public Rectangle2D getBounds()
+    {
+        return new Rectangle2D.Double( getX(), getY(), 1, 1 );
     }
 
 }

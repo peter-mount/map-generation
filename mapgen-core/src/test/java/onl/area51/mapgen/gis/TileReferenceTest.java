@@ -66,4 +66,23 @@ public class TileReferenceTest
         assertEquals( LONG, c.getLongitude(), delta );
         assertEquals( LAT, c.getLatitude(), delta );
     }
+
+    @Test
+    public void contains()
+    {
+        // Tile containing most of south & south west England.
+        final TileReference tile = TileReference.of( 6, 31, 21 );
+        System.out.printf( "(%d,%d,%d) (%d,%f,%f)\n", 
+                           tile.getZ(), tile.getX(), tile.getY(),
+                           tile.getZ(), tile.getDecimalX(), tile.getDecimalY()
+        );
+
+        // Southampton
+        TileReference southampton = TileReference.fromCoordinate( 6, Coordinate.of( -1.4, 50.9 ) );
+        System.out.printf( "(%d,%d,%d) (%d,%f,%f)\n",
+                           southampton.getZ(), southampton.getX(), southampton.getY() ,
+                           southampton.getZ(), southampton.getDecimalX(), southampton.getDecimalY() );
+
+        assertTrue( "Tile should contain point",tile.contains( southampton ) );
+    }
 }
