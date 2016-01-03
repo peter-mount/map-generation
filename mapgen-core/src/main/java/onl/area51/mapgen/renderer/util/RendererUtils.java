@@ -78,9 +78,7 @@ public class RendererUtils
             try {
                 g.setColor( Color.BLACK );
                 g.setBackground( Color.WHITE );
-
-                Renderer r = new DefaultRenderer( g, visible, observer, z );
-                r.forEach( action );
+                action.accept( new DefaultRenderer( g, visible, observer, z ));
             }
             finally {
                 g.setClip( ccache );

@@ -50,6 +50,7 @@ public class VectorLayerTest
         layer.addPoint( 0.529, 51.272, "Maidstone" );
         layer.addPoint( -1.4, 50.9, "Southampton" );
         layer.addPoint( -3.11, 51.29, "Cardiff" );
+        layer.addPoint( -0.1275, 51.507222, "London" );
 
         Layers layers = new LinkedLayers();
         layers.add( new DefaultLayer( layer ).setEnabled( true ) );

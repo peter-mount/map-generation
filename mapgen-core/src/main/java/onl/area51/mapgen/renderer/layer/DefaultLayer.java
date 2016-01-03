@@ -51,7 +51,7 @@ public class DefaultLayer
     public void accept( Renderer r )
     {
         if( isEnabled() ) {
-            action.accept( r );
+            r.forEach( action );
         }
     }
 
