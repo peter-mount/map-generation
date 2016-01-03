@@ -62,4 +62,25 @@ public class VectorLayerTest
         ImageIO.write( img, "png", new File( "Vector-Point.png" ) );
     }
 
+    @Test
+    public void text()
+            throws IOException,
+                   InterruptedException
+    {
+        VectorLayer layer = VectorLayer.create();
+        layer.addText( 0.529, 51.272, "Maidstone" );
+        layer.addText( -1.4, 50.9, "Southampton" );
+        layer.addText( -3.11, 51.29, "Cardiff" );
+        layer.addText( -0.1275, 51.507222, "London" );
+
+        Layers layers = new LinkedLayers();
+        layers.add( new DefaultLayer( layer ).setEnabled( true ) );
+        layers.add( new DefaultLayer( new GridRenderer( true ) ).setEnabled( true ) );
+        layers.add( new DefaultLayer( new TileRenderer( MapTileServer.OPEN_STREET_MAP ) ).setEnabled( true ) );
+
+        BufferedImage img = ImageType.INT_RGB.create( 1024, 1024 );
+        RendererUtils.render( img, 6, 29, 18, layers );
+        ImageIO.write( img, "png", new File( "Vector-Text.png" ) );
+    }
+
 }

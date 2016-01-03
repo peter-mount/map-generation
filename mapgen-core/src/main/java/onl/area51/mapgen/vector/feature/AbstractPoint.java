@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package onl.area51.mapgen.vector;
+package onl.area51.mapgen.vector.feature;
 
+import onl.area51.mapgen.vector.Point;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import onl.area51.mapgen.gis.TileReference;
 import onl.area51.mapgen.renderer.Renderer;
@@ -26,7 +26,7 @@ import uk.trainwatch.gis.Coordinate;
  *
  * @author peter
  */
-public class DefaultPoint
+public abstract class AbstractPoint
         implements Point
 {
 
@@ -35,7 +35,17 @@ public class DefaultPoint
     private final String label;
     private final Color colour;
 
-    DefaultPoint( Coordinate coord, String label, Color colour )
+    public AbstractPoint( Coordinate coord )
+    {
+        this( coord, null, Color.BLACK );
+    }
+
+    public AbstractPoint( Coordinate coord, Color colour )
+    {
+        this( coord, null, colour );
+    }
+
+    public AbstractPoint( Coordinate coord, String label, Color colour )
     {
         this.coord = coord;
         this.label = label;
@@ -47,43 +57,42 @@ public class DefaultPoint
     }
 
     @Override
-    public Rectangle2D getBounds()
+    public final Rectangle2D getBounds()
     {
         return bounds;
     }
 
     @Override
-    public Coordinate getCoordinate()
+    public final Coordinate getCoordinate()
     {
         return coord;
     }
 
     @Override
-    public String getLabel()
+    public final String getLabel()
     {
         return label;
     }
 
     @Override
-    public Color getColour()
+    public final Color getColour()
     {
         return colour;
     }
 
     @Override
-    public void accept( Renderer r )
+    public final void accept( Renderer r )
     {
         TileReference ref = TileReference.fromCoordinate( r.getZoom(), coord );
         if( r.getTileReference().contains( ref ) ) {
-            int x = r.getXp() + ref.getPx( r.getX() ) - 3;
-            int y = r.getYp() + ref.getPy( r.getY() ) - 3;
-            Graphics2D g = r.getGraphics2D();
-            r.setColor( getColour() );
-            g.fillOval( x, y, 7, 7 );
-            if( label != null && !label.isEmpty() ) {
-                g.drawString( label, x, y );
-            }
+            drawPoint( r,
+                       ref,
+                       r.getXp() + ref.getPx( r.getX() ) - 3,
+                       r.getYp() + ref.getPy( r.getY() ) - 3
+            );
         }
     }
+
+    protected abstract void drawPoint( Renderer r, TileReference ref, int x, int y );
 
 }

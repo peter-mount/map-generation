@@ -15,9 +15,11 @@
  */
 package onl.area51.mapgen.vector;
 
+import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.util.function.Consumer;
 import onl.area51.mapgen.renderer.Renderer;
+import uk.trainwatch.gis.Coordinate;
 
 /**
  * An element within a vector map
@@ -28,5 +30,26 @@ public interface Element
         extends Consumer<Renderer>
 {
 
+    /**
+     * The coordinate of this point
+     * <p>
+     * @return
+     */
+    Coordinate getCoordinate();
+
+    /**
+     * The label
+     * <p>
+     * @return
+     */
+    String getLabel();
+
+    /**
+     * The colour
+     * <p>
+     * @return
+     */
+    Color getColour();
+    
     Rectangle2D getBounds();
 }

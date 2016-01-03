@@ -13,38 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package onl.area51.mapgen.vector;
+package onl.area51.mapgen.vector.feature;
 
-import java.awt.geom.Rectangle2D;
-import java.util.function.Consumer;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import onl.area51.mapgen.gis.TileReference;
 import onl.area51.mapgen.renderer.Renderer;
+import onl.area51.mapgen.vector.Text;
 import uk.trainwatch.gis.Coordinate;
 
 /**
- *
+ * Some text drawn on a map.
+ * <p>
  * @author peter
  */
-public interface VectorLayer
-        extends Consumer<Renderer>
+public class DefaultText
+        extends AbstractPoint
+        implements Text
 {
 
-    static VectorLayer create()
+    public DefaultText( Coordinate coord, String label, Color colour )
     {
-        return new DefaultVectorLayer();
+        super( coord, label, colour );
     }
 
-    VectorLayer add( Element e );
-
-    Rectangle2D getBounds();
-
-    default void addPoint( double λ, double φ, String t )
+    @Override
+    protected void drawPoint( Renderer r, TileReference ref, int x, int y )
     {
-        add( Point.create( Coordinate.of( λ, φ ), t ) );
+        String label = getLabel();
+        if( label != null && !label.isEmpty() ) {
+            Graphics2D g = r.getGraphics2D();
+            r.setColor( getColour() );
+            g.drawString( label, x, y );
+        }
     }
-
-    default void addText( double λ, double φ, String t )
-    {
-        add( Text.create( Coordinate.of( λ, φ ), t ) );
-    }
-
 }

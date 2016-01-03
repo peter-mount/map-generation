@@ -17,7 +17,7 @@ package onl.area51.mapgen.vector;
 
 import java.awt.Color;
 import onl.area51.mapgen.vector.Element;
-import onl.area51.mapgen.vector.feature.DefaultPoint;
+import onl.area51.mapgen.vector.feature.DefaultText;
 import uk.trainwatch.gis.Coordinate;
 
 /**
@@ -25,23 +25,23 @@ import uk.trainwatch.gis.Coordinate;
  * <p>
  * @author peter
  */
-public interface Point
+public interface Text
         extends Element
 {
 
-    static Point create( Coordinate coord, String label, Color col )
+    static Text create( Coordinate coord, String label, Color col )
     {
-        return new DefaultPoint( coord, label, col );
+        return new DefaultText( coord, label, col );
     }
 
-    static Point create( Coordinate coord, Color col )
+    static Text create( Coordinate coord, Color col )
     {
-        return new DefaultPoint( coord, null, col );
+        return new DefaultText( coord, null, col );
     }
 
-    static Point create( Coordinate coord, String label )
+    static Text create( Coordinate coord, String label )
     {
-        return new DefaultPoint( coord, label, Color.BLACK );
+        return new DefaultText( coord, label, Color.BLACK );
     }
 
 }
