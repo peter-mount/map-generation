@@ -48,7 +48,7 @@ public class MapExtension
     @Override
     public String getName()
     {
-        return "MapGeneraton";
+        return "MapGeneration";
     }
 
     @Override
@@ -78,9 +78,6 @@ public class MapExtension
                     // Image = createImage(w,h);
                     case "createImage":
                         return ( s, a ) -> ImageType.INT_RGB.create( getInt( args[0], s ), getInt( args[1], s ) );
-
-                    case "writeImage":
-                        return ( s, a ) -> ImageUtils.writeImage( getImage( args[0], s ), getString( args[1], s ) );
 
                     default:
                         break;
@@ -131,6 +128,17 @@ public class MapExtension
         final int argc = args == null ? 0 : args.length;
 
         switch( argc ) {
+            case 2:
+                switch( name ) {
+
+                    case "writeImage":
+                        return ( s, a ) -> ImageUtils.writeImage( getImage( args[0], s ), args[1].invoke( s, a ) );
+
+                    default:
+                        break;
+                }
+                break;
+
             case 3:
                 switch( name ) {
                     case "writeImage":

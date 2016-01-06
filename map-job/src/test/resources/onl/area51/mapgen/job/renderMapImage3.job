@@ -11,7 +11,7 @@ run as "test";
     layers.add( new baseTileLayer("Open Street Map") );
     
     image = createImage(1024,1024);
-    renderMap(image,6,29,18,layers);
-    file = writeImage(image,"uk-grid.png");
+    renderMap(image,6,30,18,layers);
+    writeImage(image,"uk-grid.png");
     log file;
 }
