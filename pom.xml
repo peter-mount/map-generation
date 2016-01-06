@@ -11,8 +11,9 @@
     </description>
     <modules>
         <module>mapgen-core</module>
-        <module>map-swing</module>
+        <module>map-grib</module>
         <module>map-job</module>
+        <module>map-swing</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

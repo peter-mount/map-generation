@@ -1,0 +1,36 @@
+// Generate an index of a grib file
+job "grib1";
+run as "test";
+{
+    gribName = "/home/peter/gfs.grib";
+
+    log "Opening grib " + gribName;
+    grib = openGrib(gribName);
+
+    log "Generating index";
+    t = table();
+    row = t.newHeader();
+    row.newCell( "Index" );
+    row.newCell( "prodId" );
+    row.newCell( "catId" );
+    row.newCell( "nameId" );
+    row.newCell( "Cat" );
+    row.newCell( "Name" );
+    row.newCell( "Unit" );
+    row.newCell( "Product" );
+
+    json = grib.jsonIndex();
+    json.forEach( r -> {
+        row = t.newRow();
+        row.append( r.index );
+        row.append( r.productDefId );
+        row.append( r.paramCatId );
+        row.append( r.paramNameId );
+        row.append( r.paramCat );
+        row.append( r.paramName );
+        row.append( r.paramUnit );
+        row.append( r.productDef );
+    });
+
+    log "Index of available products within "+gribName+"\n" + t;
+}
