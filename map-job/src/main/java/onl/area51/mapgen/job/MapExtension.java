@@ -156,8 +156,8 @@ public class MapExtension
                         return ( s, a ) -> RendererUtils.render(
                                 getImage( args[0], s ),
                                 getInt( args[1], s ),
-                                getInt( args[2], s ),
-                                getInt( args[3], s ),
+                                getDouble( args[2], s ),
+                                getDouble( args[3], s ),
                                 (Consumer<Renderer>) args[4].invoke( s, a )
                         );
 

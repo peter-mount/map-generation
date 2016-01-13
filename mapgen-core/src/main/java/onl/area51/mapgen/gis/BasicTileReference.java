@@ -101,4 +101,10 @@ public class BasicTileReference
                && Double.doubleToLongBits( this.yd ) == Double.doubleToLongBits( other.yd );
     }
 
+    @Override
+    public String toString()
+    {
+        return "TileReference[" + z + "," + xd + "," + yd + ']';
+    }
+
 }

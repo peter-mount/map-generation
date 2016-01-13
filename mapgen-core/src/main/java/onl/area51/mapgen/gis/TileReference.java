@@ -15,6 +15,7 @@
  */
 package onl.area51.mapgen.gis;
 
+import java.awt.geom.Rectangle2D;
 import uk.trainwatch.gis.Bounds;
 import uk.trainwatch.gis.Coordinate;
 
@@ -119,9 +120,9 @@ public interface TileReference
         if( getZ() != t.getZ() ) {
             return false;
         }
-        double x = getDecimalX(), y = getDecimalY();
-        return t.getDecimalX() >= getDecimalX() && t.getDecimalX() < (getDecimalX() + 1.0)
-               && t.getDecimalY() >= getDecimalY() && t.getDecimalY() < (getDecimalY() + 1.0);
+        double x0 = t.getDecimalX(), y0 = t.getDecimalY();
+        double x1 = getDecimalX(), y1 = getDecimalY();
+        return x1 <= x0 && x0 < (x1 + 1.0) && y1 <= y0 && y0 < (y1 + 1.0);
     }
 
     default int getPx( double left )
@@ -133,4 +134,5 @@ public interface TileReference
     {
         return (int) ((getDecimalY() - top) * 256);
     }
+
 }

@@ -49,10 +49,15 @@ public class RendererUtils
 
     public static BufferedImage render( BufferedImage image, int z, int x, int y, Consumer<Renderer> action )
     {
+        return render( image, z, (double)x, (double)y, action);
+    }
+
+    public static BufferedImage render( BufferedImage image, int z, double x, double y, Consumer<Renderer> action )
+    {
         if( action != null ) {
-            int left = x * TILE_SIZE;
-            int top = y * TILE_SIZE;
-            final Rectangle visible = new Rectangle( left, top, image.getWidth(), image.getHeight() );
+            double left = x * TILE_SIZE;
+            double top = y * TILE_SIZE;
+            final Rectangle visible = new Rectangle( (int)left, (int)top, image.getWidth(), image.getHeight() );
 
             Graphics2D g = image.createGraphics();
             try {
