@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import onl.area51.gfs.grib2.Grib2;
 import onl.area51.gfs.grib2.GribFile;
+import ucar.grib.grib2.Grib2Record;
 import uk.trainwatch.job.Scope;
 import uk.trainwatch.job.lang.expr.ExpressionOperation;
 
@@ -83,6 +84,12 @@ public class MiscOps
             throws Exception
     {
         return (Grib2) op.invoke( s );
+    }
+
+    public static Grib2Record getGrib2Record( ExpressionOperation op, Scope s )
+            throws Exception
+    {
+        return (Grib2Record) op.invoke( s );
     }
 
     public static Path getPath( ExpressionOperation op, Scope s )

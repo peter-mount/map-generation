@@ -9,13 +9,21 @@ run as "test";
 
     // Temperature at Ground/Water surface
     temp = findGribParameter(grib,0,0,0,1,0);
+    //temp = findGribParameter(grib,0,0,0,103,2);
 
     layers = new tileLayerSet();
     layers.add( new tileGridLayer() );
+    layers.add( new gribTextLayer( grib, temp ) );
     layers.add( new baseTileLayer("Open Street Map") );
     
-    image = createImage(1024,1024);
-    renderMap(image,6,30,18,layers);
-    writeImage(image,"uk-temp.png");
+    // The UK & Ireland
+    //image = createImage(1024,1024);
+    //renderMap(image,6,30,18,layers);
+    //writeImage(image,"uk-temp.png");
+
+    // England & Wales
+    image = createImage(900,900);
+    renderMap(image,7,61.5,40,layers);
+    writeImage(image,"se-temp.png");
 
 }

@@ -20,13 +20,12 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ImageObserver;
-import java.util.Iterator;
 
 /**
  *
  * @author peter
  */
-public class RendererWrapper
+public abstract class RendererWrapper
         implements Renderer
 {
 
@@ -113,12 +112,6 @@ public class RendererWrapper
     public void setY( int y )
     {
         delegate.setY( y );
-    }
-
-    @Override
-    public Iterator<Renderer> iterator()
-    {
-        return delegate.iterator();
     }
 
     @Override

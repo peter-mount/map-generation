@@ -28,8 +28,7 @@ import static onl.area51.mapgen.renderer.AbstractRenderer.TILE_SIZE;
  * @author peter
  */
 public interface Renderer
-        extends Iterable<Renderer>,
-                GraphicsExt
+        extends GraphicsExt
 {
 
     static final int TILE_SIZE = 256;
@@ -39,11 +38,7 @@ public interface Renderer
      * <p>
      * @param action
      */
-    @Override
-    default void forEach( Consumer<? super Renderer> action )
-    {
-        iterator().forEachRemaining( action );
-    }
+    void forEach( Consumer<? super Renderer> action );
 
     /**
      * If the current tile is visible then pass it to the supplied consumer

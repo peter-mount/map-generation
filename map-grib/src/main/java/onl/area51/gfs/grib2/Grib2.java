@@ -82,8 +82,7 @@ public class Grib2
 
         // Get the data
         Grib2DataSection ds = new Grib2DataSection( true, raf, gds, drs, bms );  // Section 7
-        //System.out.println("DS offset=" + ds.getOffset() );
-
+        
         // not a quasi grid or don't expand Quasi
         if( (gds.getGdsVars().getOlon() == 0) || !expandQuasi ) {
             return ds.getData();

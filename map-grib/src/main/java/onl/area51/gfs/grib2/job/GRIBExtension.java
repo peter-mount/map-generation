@@ -20,8 +20,9 @@ import java.util.stream.Collectors;
 import onl.area51.gfs.grib2.Grib2;
 import onl.area51.gfs.grib2.Grib2Filters;
 import static onl.area51.gfs.grib2.job.MiscOps.*;
-
+import onl.area51.gfs.grib2.layer.Grib2Layer;
 import org.kohsuke.MetaInfServices;
+import ucar.grib.grib2.Grib2Record;
 import uk.trainwatch.job.ext.Extension;
 import uk.trainwatch.job.lang.expr.ExpressionOperation;
 import uk.trainwatch.job.lang.expr.Logic;
@@ -31,7 +32,7 @@ import uk.trainwatch.job.lang.expr.Logic;
  * @author peter
  */
 @MetaInfServices(Extension.class)
-public class GFSExtension
+public class GRIBExtension
         implements Extension
 {
 
@@ -175,7 +176,8 @@ public class GFSExtension
                                 .filter( Grib2Filters.filterProduct( getInt( args[1], s ), getInt( args[2], s ), getInt( args[3], s ) ) )
                                 .filter( Grib2Filters.filterLevel1( getInt( args[4], s ) ) )
                                 .filter( Grib2Filters.filterLevel1( getDouble( args[5], s ) ) )
-                                .collect( Collectors.toList() );
+                                .findAny()
+                                .orElse( null );
 
                     default:
                         break;
@@ -186,6 +188,26 @@ public class GFSExtension
                 break;
         }
         return null;
+    }
+
+    @Override
+    public ExpressionOperation construct( String type, ExpressionOperation... exp )
+    {
+        switch( exp.length ) {
+            case 2:
+                switch( type ) {
+
+                    // new gribTextLater( Grib2, Grib2Record );
+                    case "gribTextLayer":
+                        return ( s, a ) -> Grib2Layer.textLayer( getGrib2( exp[0], s ), getGrib2Record( exp[1], s ) );
+
+                    default:
+                        return null;
+                }
+
+            default:
+                return null;
+        }
     }
 
 }

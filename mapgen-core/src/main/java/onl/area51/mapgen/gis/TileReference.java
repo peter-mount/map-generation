@@ -43,6 +43,18 @@ public interface TileReference
         return (double) getY();
     }
 
+    static double fix( double v )
+    {
+        double λ = v;
+        while( λ < -180.0 ) {
+            λ += 360.0;
+        }
+        while( λ >= 180.0 ) {
+            λ -= 360.0;
+        }
+        return λ;
+    }
+
     static TileReference of( int z, int x, int y )
     {
         return new BasicTileReference( z, x, y );
@@ -57,9 +69,10 @@ public interface TileReference
     {
         double φ = Math.toRadians( point.getLatitude() );
         double m = 1 << z;
+        double λ = fix( point.getLongitude() ) + 180.0;
         return new BasicTileReference(
                 z,
-                Math.max( 0, Math.min( m - 1, (point.getLongitude() + 180.0) / 360.0 * m ) ),
+                Math.max( 0, Math.min( m - 1, λ / 360.0 * m ) ),
                 Math.max( 0, Math.min( m - 1, (1.0 - Math.log( Math.tan( φ ) + 1.0 / Math.cos( φ ) ) / Math.PI) / 2.0 * m ) )
         );
     }

@@ -20,7 +20,10 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ImageObserver;
-import java.util.Iterator;
+import java.util.function.Consumer;
+import onl.area51.mapgen.gis.TileReference;
+import onl.area51.mapgen.grid.GridPoint;
+import onl.area51.mapgen.grid.GridSupport;
 
 /**
  * Object used to store state during a render
@@ -79,9 +82,70 @@ public abstract class AbstractRenderer
     }
 
     @Override
-    public final Iterator<Renderer> iterator()
+    public void forEach( Consumer<? super Renderer> action )
     {
-        return new RendererIterator( this );
+        GridSupport.stream( zoom,
+                            Math.max( 0, getTop() - 1 ),
+                            Math.min( getBottom() + 1, maxXY ),
+                            Math.max( 0, getLeft() - 1 ),
+                            Math.min( getRight() + 1, maxXY ) )
+                .map( this::map )
+                .forEach( action );
+    }
+
+    private Renderer map( GridPoint p )
+    {
+        return new RendererWrapper( this )
+        {
+            private TileReference ref;
+
+            @Override
+            public int getZoom()
+            {
+                return p.getZ();
+            }
+
+            @Override
+            public int getX()
+            {
+                return p.getX();
+            }
+
+            @Override
+            public int getY()
+            {
+                return p.getY();
+            }
+
+            @Override
+            public void setY( int y )
+            {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setX( int x )
+            {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public TileReference getTileReference()
+            {
+                if( ref == null ) {
+                    ref = TileReference.of( p.getZ(), p.getX(), p.getY() );
+                }
+                return ref;
+            }
+
+            @Override
+            public void forEach(
+                    Consumer<? super Renderer> action )
+            {
+                throw new UnsupportedOperationException();
+            }
+
+        };
     }
 
     @Override

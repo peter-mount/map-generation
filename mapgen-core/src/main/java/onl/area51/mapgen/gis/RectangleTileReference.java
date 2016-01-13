@@ -47,6 +47,18 @@ public interface RectangleTileReference
         return x1 <= x0 && x0 < x2 && y1 <= y0 && y0 < y2;
     }
 
+    static double fix( double v )
+    {
+        double λ = v;
+        while( λ < -180.0 ) {
+            λ += 360.0;
+        }
+        while( λ >= 180.0 ) {
+            λ -= 360.0;
+        }
+        return λ;
+    }
+
     /**
      * Return a RectangleTileReference for the specified zoom and Rectangle2D.
      * <p>
@@ -65,16 +77,9 @@ public interface RectangleTileReference
      */
     static RectangleTileReference fromRectangle( int z, Rectangle2D r )
     {
-        double φ1 = Math.toRadians( Math.max( r.getY(), r.getY() + r.getHeight() ) );
-        double φ2 = Math.toRadians( Math.min( r.getY(), r.getY() + r.getHeight() ) );
-        double m = 1 << z;
-        return new BasicRectangleTileReference(
-                z,
-                Math.max( 0, Math.min( m - 1, (r.getX() + 180.0) / 360.0 * m ) ),
-                Math.max( 0, Math.min( m - 1, (1.0 - Math.log( Math.tan( φ1 ) + 1.0 / Math.cos( φ1 ) ) / Math.PI) / 2.0 * m ) ),
-                Math.max( 0, Math.min( m - 1, (r.getX() + r.getWidth() + 180.0) / 360.0 * m ) ),
-                Math.max( 0, Math.min( m - 1, (1.0 - Math.log( Math.tan( φ2 ) + 1.0 / Math.cos( φ2 ) ) / Math.PI) / 2.0 * m ) )
-        );
+        double φ1 = Math.max( r.getY(), r.getY() + r.getHeight() );
+        double φ2 = Math.min( r.getY(), r.getY() + r.getHeight() );
+        return fromRectangle( z, Coordinate.of( r.getX(), φ1 ), Coordinate.of( r.getX() + r.getWidth(), φ2 ) );
     }
 
     /**
@@ -97,7 +102,7 @@ public interface RectangleTileReference
      */
     static RectangleTileReference fromRectangle( int z, Coordinate tl, double w, double h )
     {
-        return fromRectangle( z, tl, Coordinate.of( tl.getLongitude() + w, tl.getLatitude() - h ) );
+        return fromRectangle( z, tl, Coordinate.of( fix( tl.getLongitude() + w ), tl.getLatitude() - h ) );
     }
 
     /**
@@ -113,12 +118,13 @@ public interface RectangleTileReference
     {
         double φ1 = Math.toRadians( tl.getLatitude() );
         double φ2 = Math.toRadians( br.getLatitude() );
+        double λ1 = tl.getLongitude() + 180.0, λ2 = br.getLongitude() + 180.0;
         double m = 1 << z;
         return new BasicRectangleTileReference(
                 z,
-                Math.max( 0, Math.min( m - 1, (tl.getLongitude() + 180.0) / 360.0 * m ) ),
+                Math.max( 0, Math.min( m - 1, λ1 / 360.0 * m ) ),
                 Math.max( 0, Math.min( m - 1, (1.0 - Math.log( Math.tan( φ1 ) + 1.0 / Math.cos( φ1 ) ) / Math.PI) / 2.0 * m ) ),
-                Math.max( 0, Math.min( m - 1, (br.getLongitude() + 180.0) / 360.0 * m ) ),
+                Math.max( 0, Math.min( m - 1, λ2 / 360.0 * m ) ),
                 Math.max( 0, Math.min( m - 1, (1.0 - Math.log( Math.tan( φ2 ) + 1.0 / Math.cos( φ2 ) ) / Math.PI) / 2.0 * m ) )
         );
     }
