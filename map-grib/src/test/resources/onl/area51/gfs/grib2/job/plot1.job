@@ -1,5 +1,5 @@
-// Extract all temperature parameters from a grib file
-job "grib2";
+// Display map with temperature data overlaid as text
+job "plot1";
 run as "test";
 {
     gribName = "/home/peter/gfs.grib";
@@ -7,17 +7,15 @@ run as "test";
     log "Opening grib " + gribName;
     grib = openGrib(gribName);
 
-    log "Generating index";
-    t = table();
-    row = t.newHeader();
-    row.newCell( "Index" );
-    row.newCell( "prodId" );
-    row.newCell( "catId" );
-    row.newCell( "nameId" );
-    row.newCell( "Cat" );
-    row.newCell( "Name" );
-    row.newCell( "Unit" );
-    row.newCell( "Product" );
+    // Temperature at Ground/Water surface
+    temp = findGribParameter(grib,0,0,0,1,0);
 
-    log "Index of available products within "+gribName+"\n" + t;
+    layers = new tileLayerSet();
+    layers.add( new tileGridLayer() );
+    layers.add( new baseTileLayer("Open Street Map") );
+    
+    image = createImage(1024,1024);
+    renderMap(image,6,30,18,layers);
+    writeImage(image,"uk-temp.png");
+
 }

@@ -9,28 +9,41 @@ run as "test";
 
     log "Generating index";
     t = table();
+
+    f2 = numberFormat("####0.#","right",8);
+    t.setFormat(5,f2);
+
     row = t.newHeader();
     row.newCell( "Index" );
     row.newCell( "prodId" );
     row.newCell( "catId" );
     row.newCell( "nameId" );
+    row.newCell( "fsTypeId" );
+    row.newCell( "fsValue" );
     row.newCell( "Cat" );
     row.newCell( "Name" );
     row.newCell( "Unit" );
     row.newCell( "Product" );
+    row.newCell( "fsType" );
 
     json = grib.jsonIndex();
     json.forEach( r -> {
+        if( r.paramName == "Temperature" ) {
         row = t.newRow();
         row.append( r.index );
         row.append( r.productDefId );
         row.append( r.paramCatId );
         row.append( r.paramNameId );
+        row.append( r.firstSurfaceTypeId );
+        row.append( r.firstSurfaceValue );
         row.append( r.paramCat );
         row.append( r.paramName );
         row.append( r.paramUnit );
         row.append( r.productDef );
+        row.append( r.firstSurfaceType );
+}
     });
 
     log "Index of available products within "+gribName+"\n" + t;
+    log "Note: prodId, catId, nameId, fsTypeId & fsValue can be used to lookup an entry:";
 }

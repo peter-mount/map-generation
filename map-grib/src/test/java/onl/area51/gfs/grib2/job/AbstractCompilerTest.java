@@ -52,12 +52,13 @@ public class AbstractCompilerTest
             throws Throwable
     {
         System.out.println( "Starting " + n );
-        try {
+        try
+        {
             Job job = compile( n );
             execute( job );
             System.out.println( n + " Passed" );
-        }
-        catch( Throwable ex ) {
+        } catch( Throwable ex )
+        {
             System.out.println( n + " Failed: " + ex );
             throw ex;
         }
@@ -66,15 +67,15 @@ public class AbstractCompilerTest
     /**
      * Compile a job
      * <p>
-     * @param n
-     *          <p>
+     * @param n <p>
      * @return <p>
      * @throws IOException
      */
     protected final Job compileJob( String n )
             throws IOException
     {
-        try( InputStream is = getScript( n + ".job" ) ) {
+        try( InputStream is = getScript( n + ".job" ) )
+        {
             return Compiler.compile( new ANTLRInputStream( is ) );
         }
     }
@@ -98,10 +99,11 @@ public class AbstractCompilerTest
     protected final List<String> getLines( String n )
             throws IOException
     {
-        try( BufferedReader r = new BufferedReader( new InputStreamReader( getClass().getResourceAsStream( n ) ) ) ) {
+        try( BufferedReader r = new BufferedReader( new InputStreamReader( getClass().getResourceAsStream( n ) ) ) )
+        {
             return r.lines().collect( Collectors.toList() );
-        }
-        catch( NullPointerException ex ) {
+        } catch( NullPointerException ex )
+        {
             return Collections.emptyList();
         }
     }
@@ -112,23 +114,28 @@ public class AbstractCompilerTest
         List<String> expectedLog = getLines( n + ".log" );
 
         // No .log file or it's empty then don't test the log
-        if( expectedLog.isEmpty() ) {
+        if( expectedLog.isEmpty() )
+        {
             return;
         }
 
         int es = expectedLog.size();
         int l = 0;
-        for( String line: log ) {
-            if( l < es ) {
+        for( String line : log )
+        {
+            if( l < es )
+            {
                 assertEquals( "Line " + l, expectedLog.get( l ), line );
             }
-            else {
+            else
+            {
                 fail( "Extra line " + l + ": " + line );
             }
             l++;
         }
 
-        if( es > log.size() ) {
+        if( es > log.size() )
+        {
             fail( "Missing last " + (es - log.size()) + " lines" );
         }
     }
@@ -148,7 +155,8 @@ public class AbstractCompilerTest
 
         Logger logger = LogHandler.getLogger( "test." + n,
                                               r -> String.format( "%-6.6s%-6.6s %s", n, r.getLevel(), r.getMessage() ),
-                                              log::add );
+                                              System.out::println );
+        //log::add );
 
         logger.setLevel( Level.FINE );
 
