@@ -78,6 +78,12 @@ public enum TileCache
     private synchronized Tile getCacheEntry( MapTileServer server, int zoom, int x, int y )
     {
         final long max = 1L << zoom;
+
+        // Ensure we don't try to get tiles outside of the valid ranges
+        if( x < 0 || x >= max || y < 0 || y >= max ) {
+            throw new IllegalArgumentException( "Tile (" + zoom + "," + x + "," + y + ") out of bounds " + max );
+        }
+
         return tiles.computeIfAbsent( (((zoom * max) + x) * max + y) * 100 + server.ordinal(),
                                       index -> new Tile( index, server, zoom, x, y )
         );
@@ -90,14 +96,14 @@ public enum TileCache
         SynchronousQueue<Tile> q = new SynchronousQueue<>();
         //Exchanger<Tile> ex = new Exchanger<>();
         Tile tile = getTile( server, zoom, x, y, t -> {
-            try {
-                // Give up if the outer thread is not responding. It should be waiting so don't sit here too long
-                q.offer( t, 50, TimeUnit.MILLISECONDS );
-            }
-            catch( InterruptedException ex1 ) {
-                // Ignore
-            }
-        } );
+                         try {
+                             // Give up if the outer thread is not responding. It should be waiting so don't sit here too long
+                             q.offer( t, 50, TimeUnit.MILLISECONDS );
+                         }
+                         catch( InterruptedException ex1 ) {
+                             // Ignore
+                         }
+                     } );
 
         if( tile == null || (!tile.isImagePresent() && !tile.isError()) ) {
             // Allow up to 10 seconds for a slow remote server
@@ -120,8 +126,8 @@ public enum TileCache
     public Tile getTile( MapTileServer server, int zoom, int x, int y )
     {
         return getTile( server, zoom, x, y, t -> {
-        }, ( t, e ) -> {
-        } );
+                }, ( t, e ) -> {
+                } );
     }
 
     public Tile getTile( MapTileServer server, int zoom, int x, int y, Consumer<Tile> notifier )

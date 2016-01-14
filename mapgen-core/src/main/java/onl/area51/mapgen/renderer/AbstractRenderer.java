@@ -21,6 +21,7 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ImageObserver;
 import java.util.function.Consumer;
+import java.util.function.IntUnaryOperator;
 import onl.area51.mapgen.gis.TileReference;
 import onl.area51.mapgen.grid.GridPoint;
 import onl.area51.mapgen.grid.GridSupport;
@@ -84,11 +85,14 @@ public abstract class AbstractRenderer
     @Override
     public void forEach( Consumer<? super Renderer> action )
     {
+        // Although we handle a tile around the edge, we must keep it within 0<=v<maxXY
+        IntUnaryOperator inRange = v -> Math.max( 0, Math.min( v, maxXY - 1 ) );
+
         GridSupport.stream( zoom,
-                            Math.max( 0, getTop() - 1 ),
-                            Math.min( getBottom() + 1, maxXY ),
-                            Math.max( 0, getLeft() - 1 ),
-                            Math.min( getRight() + 1, maxXY ) )
+                            inRange.applyAsInt( getTop() - 1 ),
+                            inRange.applyAsInt( getBottom() + 1 ),
+                            inRange.applyAsInt( getLeft() - 1 ),
+                            inRange.applyAsInt( getRight() + 1 ) )
                 .map( this::map )
                 .forEach( action );
     }
