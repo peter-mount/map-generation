@@ -16,6 +16,8 @@
 package onl.area51.mapgen.util;
 
 import java.awt.Color;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Static data for {@link ColorMap} use only. Use the relevant methods in that interface to access these.
@@ -66,4 +68,16 @@ final class ColorMaps
         new Color( 200, 0, 0 ),// 32
         new Color( 120, 0, 0 )
     };
+
+    private static final Map<Integer, Color> GREY_SCALE = new ConcurrentHashMap<>();
+
+    /**
+     * Returns a grey Color
+     * @param index from 0..255
+     * @return Color
+     */
+    static Color getGrey( int index )
+    {
+        return GREY_SCALE.computeIfAbsent( Math.max( 0, Math.min( index, 255 ) ), c -> new Color( c, c, c ) );
+    }
 }

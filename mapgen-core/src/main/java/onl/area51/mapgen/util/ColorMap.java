@@ -17,7 +17,9 @@ package onl.area51.mapgen.util;
 
 import java.awt.Color;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An indexed Colour map which can be used to represent values as colours
@@ -57,19 +59,26 @@ public interface ColorMap
             throw new IllegalArgumentException( "Invalid ColorMap size" );
         }
         // Copy of the array so we know it's immutable
-        Color map[] = Arrays.copyOf( c, c.length );
+        Color m[] = Arrays.copyOf( c, c.length );
+        int size = m.length;
         return new ColorMap()
         {
             @Override
             public Color getColor( int index )
             {
-                return map[index];
+                if( index < 0 ) {
+                    return m[0];
+                }
+                if( index >= size ) {
+                    return m[size - 1];
+                }
+                return m[index];
             }
 
             @Override
             public int size()
             {
-                return map.length;
+                return size;
             }
         };
     }
@@ -109,13 +118,27 @@ public interface ColorMap
             }
         }
 
-        // Own implementation rather than create() as no need to copy the array for security reasons
+        return create( m );
+    }
+
+    /**
+     * Creates a grey scaled ColorMap
+     * @param size number of entries, min 3 max 256
+     * @return ColorMap
+     */
+    static ColorMap greyScale( int size )
+    {
+        if( size < 3 || size > 256 ) {
+            throw new IllegalArgumentException( "Size must be 3<=size<=256" );
+        }
+
+        int Δc = 255 / size;
         return new ColorMap()
         {
             @Override
-            public Color getColor( int index )
+            public Color getColor( int c )
             {
-                return m[index];
+                return ColorMaps.getGrey( Math.max( 0, Math.min( c * Δc, 255 ) ) );
             }
 
             @Override

@@ -18,7 +18,6 @@ package onl.area51.mapgen.util;
 import java.awt.Color;
 import java.util.DoubleSummaryStatistics;
 import java.util.Objects;
-import static onl.area51.mapgen.util.ColorMap.create;
 
 /**
  * A Colour map which will map values to colours.
@@ -26,31 +25,9 @@ import static onl.area51.mapgen.util.ColorMap.create;
  * @author peter
  */
 public interface RangedColorMap
-        extends ColorMap
+        extends ColorMap,
+                RangedValue
 {
-
-    /**
-     * The minimum value
-     *
-     * @return
-     */
-    double getMinValue();
-
-    /**
-     * The maximum value
-     *
-     * @return
-     */
-    double getMaxValue();
-
-    /**
-     * The index in the map associated with a value
-     *
-     * @param val value
-     *
-     * @return index
-     */
-    int getIndex( double val );
 
     /**
      * The colour assigned to this value
@@ -63,15 +40,6 @@ public interface RangedColorMap
     {
         return getColor( getIndex( val ) );
     }
-
-    /**
-     * The value at the specified index. This is usually used when generating legends
-     *
-     * @param index
-     *
-     * @return
-     */
-    double getValue( int index );
 
     /**
      * Return a RangedColorMap with the specified ColorMap and based on the supplied stats
@@ -106,12 +74,25 @@ public interface RangedColorMap
             return create( map, max, min );
         }
 
-        int size = map.size(), maxIndex = size - 1;
-        double Δv = (max - min) / size;
-        double v[] = new double[size];
-        v[0] = min;
-        for( int i = 1; i < size; i++ ) {
-            v[i] = v[i - 1] + Δv;
+        return create( map, RangedValue.create( min, max, map.size() ) );
+    }
+
+    /**
+     * Creates a RangedColorMap based on a ColorMap and a RangedValue
+     *
+     * @param map   ColorMap
+     * @param range RangedValue
+     *
+     * @return RangedColorMap
+     *
+     * @throws IllegalArgumentException if the sizes of the ColorMap and RangedValue do not match
+     */
+    static RangedColorMap create( ColorMap map, RangedValue range )
+    {
+        Objects.requireNonNull( map );
+        Objects.requireNonNull( range );
+        if( map.size() != range.size() ) {
+            throw new IllegalArgumentException( "ColorMap and RangedValue must be the same size" );
         }
 
         return new RangedColorMap()
@@ -119,61 +100,37 @@ public interface RangedColorMap
             @Override
             public double getMinValue()
             {
-                return min;
+                return range.getMinValue();
             }
 
             @Override
             public double getMaxValue()
             {
-                return max;
+                return range.getMaxValue();
             }
 
             @Override
             public int getIndex( double val )
             {
-                if( val <= min ) {
-                    return 0;
-                }
-                if( val >= max ) {
-                    return maxIndex;
-                }
-                for( int i = 1; i < size; i++ ) {
-                    if( val < v[i] ) {
-                        return i;
-                    }
-                }
-                // Should never be reached
-                return maxIndex;
+                return range.getIndex( val );
             }
 
             @Override
             public double getValue( int index )
             {
-                if( index < 0 ) {
-                    return v[0];
-                }
-                else if( index > maxIndex ) {
-                    return v[maxIndex];
-                }
-                return v[index];
+                return range.getValue( index );
             }
 
             @Override
             public Color getColor( int index )
             {
-                if( index < 0 ) {
-                    return map.getColor( 0 );
-                }
-                if( index > maxIndex ) {
-                    return map.getColor( maxIndex );
-                }
                 return map.getColor( index );
             }
 
             @Override
             public int size()
             {
-                return size;
+                return map.size();
             }
         };
     }
@@ -217,5 +174,21 @@ public interface RangedColorMap
     static RangedColorMap temp()
     {
         return create( ColorMap.temp(), -18, 34 );
+    }
+
+    /**
+     * Creates a grey scaled RangedColorMap
+     *
+     * @param size number of entries, min 3 max 256
+     *
+     * @return RangedColorMap
+     */
+    static RangedColorMap greyScale( int size )
+    {
+        if( size < 3 || size > 256 ) {
+            throw new IllegalArgumentException( "Size must be 3<=size<=256" );
+        }
+
+        return create( ColorMap.greyScale( size ), RangedValue.create( 0, 255, size ) );
     }
 }
