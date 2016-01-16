@@ -15,19 +15,23 @@
  */
 package onl.area51.gfs.grib2.layer;
 
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.function.Consumer;
+import java.util.function.IntPredicate;
+import java.util.stream.Stream;
 import onl.area51.gfs.grib2.Grib2;
 import onl.area51.gfs.grib2.Grib2MetaData;
 import onl.area51.mapgen.grid.GridSupport;
 import onl.area51.mapgen.grid.GridPoint;
-import onl.area51.mapgen.gis.TileReference;
+import onl.area51.mapgen.util.tile.TileReference;
+import onl.area51.mapgen.grid.GridDataPoint;
 import onl.area51.mapgen.renderer.Renderer;
 import ucar.grib.grib2.Grib2Record;
 import uk.trainwatch.gis.Bounds;
 import uk.trainwatch.gis.Coordinate;
-import onl.area51.mapgen.grid.GridReferencedDataPoint;
+import onl.area51.mapgen.grid.Grid;
 
 /**
  *
@@ -37,7 +41,7 @@ public abstract class AbstractGrib2Renderer
         implements Consumer<Renderer>
 {
 
-    private final float[] data;
+    private final Grid data;
     private final Grib2MetaData meta;
     /**
      * Difference in longitude between columns
@@ -48,14 +52,23 @@ public abstract class AbstractGrib2Renderer
      */
     private final double Δφ;
 
-    AbstractGrib2Renderer( Grib2MetaData meta, Grib2 file, Grib2Record record )
+    public AbstractGrib2Renderer( Grib2MetaData meta, Grib2 file, Grib2Record record )
+            throws IOException
+    {
+        this(meta, Grid.of( file.getDoubleData( record ), meta.getColumns(), meta.getRows() ) );
+    }
+
+    public AbstractGrib2Renderer( Grib2MetaData meta, Grid data )
             throws IOException
     {
         this.meta = meta;
-        data = file.getData( record );
-
+        this.data = data;
         Rectangle2D bounds = meta.getBounds();
-        Δλ = meta.getColumns() / (bounds.getX() + bounds.getWidth());
+
+        // FIXME should be cols not cols-1 here but for grib data it fails.
+        Δλ = (meta.getColumns() - 1) / (bounds.getX() + bounds.getWidth());
+//        Δλ = meta.getColumns() / (bounds.getX() + bounds.getWidth());
+
         Δφ = meta.getRows() / (bounds.getY() - bounds.getHeight());
     }
 
@@ -89,9 +102,19 @@ public abstract class AbstractGrib2Renderer
         return meta.getBounds().getY() - (y / Δφ);
     }
 
-    protected final float getVal( int x, int y )
+    protected final double getλ( double x )
     {
-        return data[x + (y * meta.getColumns())];
+        return normaliseλ( meta.getBounds().getX() + (x / Δλ) );
+    }
+
+    protected final double getφ( double y )
+    {
+        return meta.getBounds().getY() - (y / Δφ);
+    }
+
+    protected final double getVal( int x, int y )
+    {
+        return data.getValue( x, y );
     }
 
     protected final double getVal( GridPoint p )
@@ -99,48 +122,53 @@ public abstract class AbstractGrib2Renderer
         return getVal( p.getX(), p.getY() );
     }
 
-    protected final float[] getData()
+    public final Grid getData()
     {
         return data;
     }
 
-    protected final Grib2MetaData getMeta()
+    public final Grib2MetaData getMeta()
     {
         return meta;
     }
 
-    @Override
-    public void accept( Renderer r )
+    protected IntPredicate getXPredicate( Renderer r )
     {
-        // For now trust the outer caller to be calling us correctly as this only works when longitude is positive.
-        //RectangleTileReference tileBounds = RectangleTileReference.fromRectangle( tr.getZ(), getMeta().getBounds() );
-        //if( tileBounds.contains( tr ) ) {
-
-        // Get the relevant bounds
         TileReference tr = r.getTileReference();
-
         Bounds<Coordinate> cBounds = tr.getCoordinateBounds();
-        final double φ1 = cBounds.getTopLeft().getLatitude();
         final double λ1 = normaliseλ( cBounds.getTopLeft().getLongitude() );
-        final double φ2 = cBounds.getBottomRight().getLatitude();
         final double λ2 = normaliseλ( cBounds.getBottomRight().getLongitude() );
-
-        GridSupport.stream( r.getZoom(),
-                            0, meta.getRows(),
-                            GridSupport.between( φ1, φ2, this::getφ ),
-                            0, meta.getColumns(),
-                            GridSupport.betweenPosition( λ1, λ2, this::getλ ) )
-                .map( p -> GridReferencedDataPoint.of( p, this::getVal, this::getCoordinate ) )
-                .forEach( p -> plot( r, tr, p ) );
-
-        //}
+        return GridSupport.betweenPosition( λ1, λ2, this::getλ );
     }
 
-    private Coordinate getCoordinate( GridPoint p )
+    protected IntPredicate getYPredicate( Renderer r )
+    {
+        TileReference tr = r.getTileReference();
+        Bounds<Coordinate> cBounds = tr.getCoordinateBounds();
+        final double φ1 = cBounds.getTopLeft().getLatitude();
+        final double φ2 = cBounds.getBottomRight().getLatitude();
+        return GridSupport.between( φ1, φ2, this::getφ );
+    }
+
+    protected final Stream<GridDataPoint> stream( Renderer r )
+    {
+        return data.dataStream( r.getZoom(), getXPredicate( r ), getYPredicate( r ) );
+    }
+
+    protected final Coordinate getCoordinate( GridPoint p )
     {
         return Coordinate.of( getλ( p.getX() ), getφ( p.getY() ) );
     }
 
-    protected abstract void plot( Renderer r, TileReference tr, GridReferencedDataPoint p );
+    protected final Coordinate getCoordinate( double x, double y )
+    {
+        return Coordinate.of( getλ( x ), getφ( y ) );
+    }
+
+    protected final Point2D getCoordinatePoint( double x, double y )
+    {
+        Coordinate c = getCoordinate( x, y );
+        return new Point2D.Double( c.getLongitude(), c.getLatitude() );
+    }
 
 }

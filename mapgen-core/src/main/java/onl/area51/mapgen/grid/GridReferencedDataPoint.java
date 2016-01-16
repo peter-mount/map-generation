@@ -16,7 +16,7 @@
 package onl.area51.mapgen.grid;
 
 import java.util.function.Function;
-import onl.area51.mapgen.gis.TileReference;
+import onl.area51.mapgen.util.tile.TileReference;
 import uk.trainwatch.gis.Coordinate;
 
 /**

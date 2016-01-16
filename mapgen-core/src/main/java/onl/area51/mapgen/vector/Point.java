@@ -17,7 +17,6 @@ package onl.area51.mapgen.vector;
 
 import java.awt.Color;
 import onl.area51.mapgen.vector.Element;
-import onl.area51.mapgen.vector.feature.DefaultPoint;
 import uk.trainwatch.gis.Coordinate;
 
 /**

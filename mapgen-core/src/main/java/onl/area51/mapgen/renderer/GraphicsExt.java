@@ -24,6 +24,7 @@ import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.image.ImageObserver;
+import java.util.function.Consumer;
 
 /**
  *
@@ -38,12 +39,29 @@ public interface GraphicsExt
      * @return
      */
     Graphics getGraphics();
-    
+
     ImageObserver getImageObserver();
 
     default Graphics2D getGraphics2D()
     {
         return (Graphics2D) getGraphics();
+    }
+
+    /**
+     * Use a consumer to draw onto a map. Using this is preferable when modifying the {@link Graphics2D} instance as it ensures that the state is preserved
+     * aftyer the action has been performed.
+     *
+     * @param action
+     */
+    default void draw( Consumer<Graphics2D> action )
+    {
+        final Graphics2D g = (Graphics2D) getGraphics2D().create();
+        try {
+            action.accept( g );
+        }
+        finally {
+            g.dispose();
+        }
     }
 
     default void setColor( Color c )

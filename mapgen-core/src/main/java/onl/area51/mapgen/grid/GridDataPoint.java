@@ -26,6 +26,11 @@ public interface GridDataPoint
         extends GridPoint
 {
 
+    /**
+     * Value at this point
+     *
+     * @return
+     */
     double getValue();
 
     /**

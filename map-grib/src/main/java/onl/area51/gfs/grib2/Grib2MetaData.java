@@ -19,7 +19,6 @@ import java.awt.geom.Rectangle2D;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import onl.area51.mapgen.gis.RectangleTileReference;
 import ucar.grib.grib2.Grib2GDSVariables;
 import ucar.grib.grib2.Grib2IdentificationSection;
 import ucar.grib.grib2.Grib2IndicatorSection;

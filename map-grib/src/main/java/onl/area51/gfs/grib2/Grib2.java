@@ -59,6 +59,27 @@ public class Grib2
 //        input.scan( true, false );
     }
 
+    public double[] getDoubleData( Grib2Record record )
+            throws IOException
+    {
+        return toDouble( getData( record ) );
+    }
+
+    public double[] getDoubleData( Grib2Record record, boolean expandQuasi )
+            throws IOException
+    {
+        return toDouble( getData( record, expandQuasi ) );
+    }
+
+    private double[] toDouble( float f[] )
+    {
+        double d[] = new double[f.length];
+        for( int i = 0; i < d.length; i++ ) {
+            d[i] = (double) f[i];
+        }
+        return d;
+    }
+
     public float[] getData( Grib2Record record )
             throws IOException
     {
@@ -82,7 +103,7 @@ public class Grib2
 
         // Get the data
         Grib2DataSection ds = new Grib2DataSection( true, raf, gds, drs, bms );  // Section 7
-        
+
         // not a quasi grid or don't expand Quasi
         if( (gds.getGdsVars().getOlon() == 0) || !expandQuasi ) {
             return ds.getData();

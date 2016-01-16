@@ -18,14 +18,14 @@ package onl.area51.mapgen.job;
 import java.util.function.Consumer;
 import static onl.area51.mapgen.job.MiscOps.*;
 import onl.area51.mapgen.renderer.Renderer;
-import onl.area51.mapgen.renderer.util.RendererUtils;
-import onl.area51.mapgen.renderer.util.ImageType;
-import onl.area51.mapgen.renderer.layer.DefaultLayer;
-import onl.area51.mapgen.renderer.layer.LinkedLayers;
-import onl.area51.mapgen.renderer.util.ColourType;
-import onl.area51.mapgen.renderer.util.ImageUtils;
-import onl.area51.mapgen.renderers.GridRenderer;
-import onl.area51.mapgen.renderers.TileRenderer;
+import onl.area51.mapgen.renderer.RendererUtils;
+import onl.area51.mapgen.util.ImageType;
+import onl.area51.mapgen.layer.DefaultTiledLayer;
+import onl.area51.mapgen.layer.LinkedLayers;
+import onl.area51.mapgen.util.ColourType;
+import onl.area51.mapgen.util.ImageUtils;
+import onl.area51.mapgen.features.GridRenderer;
+import onl.area51.mapgen.features.TileRenderer;
 
 import onl.area51.mapgen.tilecache.MapTileServer;
 import onl.area51.mapgen.tilecache.TileCache;
@@ -181,7 +181,7 @@ public class MapExtension
                 switch( type ) {
 
                     case "tileGridLayer":
-                        return ( s, a ) -> new DefaultLayer( "Tile grid", new GridRenderer( true ) ).setEnabled( true );
+                        return ( s, a ) -> new DefaultTiledLayer( "Tile grid", new GridRenderer( true ) ).setEnabled( true );
 
                     case "tileLayerSet":
                         return ( s, a ) -> new LinkedLayers();
@@ -196,11 +196,11 @@ public class MapExtension
                     case "baseTileLayer":
                         return ( s, a ) -> {
                             MapTileServer server = MapTileServer.lookup( getString( exp[0], s ) );
-                            return new DefaultLayer( server.getTitle(), new TileRenderer( server ) ).setEnabled( true );
+                            return new DefaultTiledLayer( server.getTitle(), new TileRenderer( server ) ).setEnabled( true );
                         };
 
                     case "tileGridLayer":
-                        return ( s, a ) -> new DefaultLayer( "Tile grid", new GridRenderer( Logic.isTrue( exp[0].invoke( s, a ) ) ) ).setEnabled( true );
+                        return ( s, a ) -> new DefaultTiledLayer( "Tile grid", new GridRenderer( Logic.isTrue( exp[0].invoke( s, a ) ) ) ).setEnabled( true );
 
                     default:
                         return null;
@@ -210,7 +210,7 @@ public class MapExtension
                 switch( type ) {
 
                     case "tileGridLayer":
-                        return ( s, a ) -> new DefaultLayer( "Tile grid",
+                        return ( s, a ) -> new DefaultTiledLayer( "Tile grid",
                                                              new GridRenderer(
                                                                      Logic.isTrue( exp[0].invoke( s, a ) ),
                                                                      ColourType.lookup( getString( exp[1], s ) ).getColor()

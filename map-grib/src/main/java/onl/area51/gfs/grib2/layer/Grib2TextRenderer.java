@@ -20,7 +20,7 @@ import java.awt.Graphics2D;
 import java.io.IOException;
 import onl.area51.gfs.grib2.Grib2;
 import onl.area51.gfs.grib2.Grib2MetaData;
-import onl.area51.mapgen.gis.TileReference;
+import onl.area51.mapgen.util.tile.TileReference;
 import onl.area51.mapgen.grid.GridReferencedDataPoint;
 import onl.area51.mapgen.renderer.Renderer;
 import ucar.grib.grib2.Grib2Record;
@@ -32,7 +32,7 @@ import uk.trainwatch.gis.Coordinate;
  * @author peter
  */
 public class Grib2TextRenderer
-        extends AbstractGrib2Renderer
+        extends AbstractGrib2PointRenderer
 {
 
     private final Color colour;
@@ -49,10 +49,12 @@ public class Grib2TextRenderer
         super( meta, file, record );
         this.colour = colour;
     }
+    
 
     @Override
-    protected void plot( Renderer r, TileReference tr, GridReferencedDataPoint p )
+    protected void plot( Renderer r, GridReferencedDataPoint p )
     {
+        TileReference tr = r.getTileReference();
         TileReference t = TileReference.fromCoordinate( tr.getZ(), Coordinate.of( p.getΛ(), p.getΦ() ) );
 
         int x = r.getXp() + t.getPx( r.getX() ) - 3;

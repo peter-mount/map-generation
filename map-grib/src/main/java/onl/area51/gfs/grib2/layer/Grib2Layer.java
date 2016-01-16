@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 import onl.area51.gfs.grib2.Grib2;
 import onl.area51.gfs.grib2.Grib2MetaData;
 import onl.area51.mapgen.renderer.Renderer;
-import onl.area51.mapgen.renderer.layer.DefaultLayer;
+import onl.area51.mapgen.layer.DefaultTiledLayer;
 import ucar.grib.grib2.Grib2Record;
 
 /**
@@ -28,7 +28,7 @@ import ucar.grib.grib2.Grib2Record;
  * @author peter
  */
 public class Grib2Layer
-        extends DefaultLayer
+        extends DefaultTiledLayer
 {
 
     public Grib2Layer( Grib2MetaData meta, Consumer<Renderer> c )
@@ -55,4 +55,5 @@ public class Grib2Layer
         Grib2MetaData meta = new Grib2MetaData( record );
         return new Grib2Layer( meta, new Grib2TextRenderer( meta, file, record ) );
     }
+    
 }

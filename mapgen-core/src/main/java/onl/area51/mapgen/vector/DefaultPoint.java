@@ -15,32 +15,37 @@
  */
 package onl.area51.mapgen.vector;
 
+import onl.area51.mapgen.vector.Point;
 import java.awt.Color;
-import onl.area51.mapgen.vector.Element;
+import java.awt.Graphics2D;
+import onl.area51.mapgen.util.tile.TileReference;
+import onl.area51.mapgen.renderer.Renderer;
 import uk.trainwatch.gis.Coordinate;
 
 /**
- * A point element on a map
- * <p>
+ *
  * @author peter
  */
-public interface Text
-        extends Element
+public class DefaultPoint
+        extends AbstractPoint
+        implements Point
 {
 
-    static Text create( Coordinate coord, String label, Color col )
+    public DefaultPoint( Coordinate coord, String label, Color colour )
     {
-        return new DefaultText( coord, label, col );
+        super( coord, label, colour );
     }
 
-    static Text create( Coordinate coord, Color col )
+    @Override
+    protected void drawPoint( Renderer r, TileReference ref, int x, int y )
     {
-        return new DefaultText( coord, null, col );
-    }
+        Graphics2D g = r.getGraphics2D();
+        r.setColor( getColour() );
+        g.fillOval( x, y, 7, 7 );
 
-    static Text create( Coordinate coord, String label )
-    {
-        return new DefaultText( coord, label, Color.BLACK );
+        String label = getLabel();
+        if( label != null && !label.isEmpty() ) {
+            g.drawString( label, x, y );
+        }
     }
-
 }

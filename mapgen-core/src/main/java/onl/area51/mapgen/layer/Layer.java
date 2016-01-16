@@ -13,34 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package onl.area51.mapgen.vector;
+package onl.area51.mapgen.layer;
 
-import java.awt.Color;
-import onl.area51.mapgen.vector.Element;
-import uk.trainwatch.gis.Coordinate;
+import java.util.function.Consumer;
+import onl.area51.mapgen.renderer.Renderer;
 
 /**
- * A point element on a map
+ * A Map Layer
  * <p>
  * @author peter
  */
-public interface Text
-        extends Element
+public interface Layer
+        extends Consumer<Renderer>
 {
 
-    static Text create( Coordinate coord, String label, Color col )
+    static final String DEFAULT_NAME = "Untitled Layer";
+
+    default String getName()
     {
-        return new DefaultText( coord, label, col );
+        return DEFAULT_NAME;
     }
 
-    static Text create( Coordinate coord, Color col )
+    default boolean isEnabled()
     {
-        return new DefaultText( coord, null, col );
+        return true;
     }
 
-    static Text create( Coordinate coord, String label )
+    default Layer setEnabled( boolean enabled )
     {
-        return new DefaultText( coord, label, Color.BLACK );
+        return this;
     }
 
 }

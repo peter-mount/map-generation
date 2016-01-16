@@ -26,8 +26,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import onl.area51.mapgen.renderer.Renderer;
-import onl.area51.mapgen.renderer.util.RendererUtils;
-import onl.area51.mapgen.renderers.GridRenderer;
+import onl.area51.mapgen.renderer.RendererUtils;
+import onl.area51.mapgen.features.GridRenderer;
 import onl.area51.mapgen.tilecache.MapPreset;
 import uk.trainwatch.util.Consumers;
 

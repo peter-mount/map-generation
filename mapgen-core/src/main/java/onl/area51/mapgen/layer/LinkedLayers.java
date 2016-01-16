@@ -13,52 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package onl.area51.mapgen.swing;
+package onl.area51.mapgen.layer;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-import javax.swing.AbstractListModel;
-import onl.area51.mapgen.layer.Layer;
-import onl.area51.mapgen.layer.Layers;
-import onl.area51.mapgen.layer.LinkedLayers;
 import onl.area51.mapgen.renderer.Renderer;
 
 /**
- * An implementation of both {@link Layers} and {@link javax.swing.ListModel} which wraps around an underlying {@link Layers} instance.
+ * Manages a set of {@link Layer}'s
  * <p>
- * @Layers} which can be passed to a {@link javax.swing.JList} component.
  * @author peter
  */
-public class LayerListModel
-        extends AbstractListModel<Layer>
+public class LinkedLayers
         implements Layers
 {
 
-    private Layers layers;
-
-    public LayerListModel()
-    {
-        this( new LinkedLayers() );
-    }
-
-    public LayerListModel( Layers layers )
-    {
-        this.layers = layers;
-    }
-
-    public Layers getLayers()
-    {
-        return layers;
-    }
-
-    public void setLayers( Layers layers )
-    {
-        if( !this.layers.equals( layers ) ) {
-            final int original = this.layers.size();
-            this.layers = layers;
-            fireContentsChanged( this, 0, Math.max( original, layers.size() ) );
-        }
-    }
+    private final LinkedList<Layer> layers = new LinkedList<>();
 
     @Override
     public int indexOf( Layer e )
@@ -66,33 +39,17 @@ public class LayerListModel
         return layers.indexOf( e );
     }
 
-    @Override
-    public int getSize()
-    {
-        return layers.size();
-    }
-
-    @Override
-    public Layer getElementAt( int index )
-    {
-        return layers.get( index );
-    }
-
+    
     @Override
     public void add( Layer layer )
     {
-        layers.addFirst( layer );
-        fireIntervalAdded( this, 0, 0 );
+        layers.addLast( layer );
     }
 
     @Override
     public void remove( Layer layer )
     {
-        int i = layers.indexOf( layer );
-        if( i > -1 ) {
-            layers.remove( layer );
-            fireIntervalRemoved( this, i, i );
-        }
+        layers.remove( layer );
     }
 
     @Override
@@ -134,9 +91,7 @@ public class LayerListModel
     @Override
     public void clear()
     {
-        int s = getSize();
         layers.clear();
-        fireContentsChanged( this, 0, s - 1 );
     }
 
     @Override
@@ -149,7 +104,6 @@ public class LayerListModel
     public void add( int index, Layer element )
     {
         layers.add( index, element );
-        fireIntervalAdded( this, index, index );
     }
 
     @Override
@@ -164,30 +118,57 @@ public class LayerListModel
         return layers.isEmpty();
     }
 
+    /**
+     * Move a layer up in the list
+     * <p>
+     * @param layer
+     */
     @Override
     public void moveUp( Layer layer )
     {
-        int s = layers.indexOf( layer );
-        if( s > 0 ) {
-            layers.moveUp( layer );
-            fireContentsChanged( this, s - 1, s );
+        final int i = layers.indexOf( layer );
+        if( i < 0 ) {
+            throw new NoSuchElementException( layer.toString() );
+        }
+        if( i > 0 ) {
+            layers.remove( layer );
+            layers.add( i - 1, layer );
         }
     }
 
+    /**
+     * Move a layer down in the list
+     * <p>
+     * @param layer
+     */
     @Override
     public void moveDown( Layer layer )
     {
-        int s = layers.indexOf( layer );
-        if( (s + 1) < layers.size() ) {
-            layers.moveDown( layer );
-            fireContentsChanged( this, s, s + 1 );
+        final int s = layers.size();
+        final int i = layers.indexOf( layer );
+        if( i < 0 ) {
+            throw new NoSuchElementException( layer.toString() );
+        }
+        if( i < layers.size() ) {
+            layers.remove( layer );
+            layers.add( i + 1, layer );
         }
     }
 
+    /**
+     * Applies the supplied {@link Renderer} to this layer set.
+     * <p>
+     * Note: This will apply them in reverse order as layers at the "Bottom" or end of the list are below the others so need rendering first.
+     * <p>
+     * @param t
+     */
     @Override
     public void accept( Renderer t )
     {
-        layers.accept( t );
+        final Iterator<Layer> i = layers.descendingIterator();
+        while( i.hasNext() ) {
+            i.next().accept( t );
+        }
     }
 
 }

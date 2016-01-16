@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
-import onl.area51.mapgen.renderer.util.ImageUtils;
+import onl.area51.mapgen.util.ImageUtils;
 
 /**
  * A simple in memory/disk based cache used for map tiles

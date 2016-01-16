@@ -22,7 +22,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.ImageObserver;
 import java.util.function.Consumer;
 import java.util.function.IntUnaryOperator;
-import onl.area51.mapgen.gis.TileReference;
+import onl.area51.mapgen.util.tile.TileReference;
 import onl.area51.mapgen.grid.GridPoint;
 import onl.area51.mapgen.grid.GridSupport;
 
@@ -143,13 +143,61 @@ public abstract class AbstractRenderer
             }
 
             @Override
-            public void forEach(
-                    Consumer<? super Renderer> action )
+            public void forEach( Consumer<? super Renderer> action )
+            {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void render( Consumer<? super Renderer> action )
             {
                 throw new UnsupportedOperationException();
             }
 
         };
+    }
+
+    @Override
+    public void render( Consumer<? super Renderer> action )
+    {
+        action.accept( new RendererWrapper( this )
+        {
+            private TileReference ref;
+
+            @Override
+            public void setY( int y )
+            {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setX( int x )
+            {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public TileReference getTileReference()
+            {
+                if( ref == null ) {
+                    ref = TileReference.of( getZoom(), getX(), getY() );
+                }
+                return ref;
+            }
+
+            @Override
+            public void forEach( Consumer<? super Renderer> action )
+            {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void render( Consumer<? super Renderer> action )
+            {
+                throw new UnsupportedOperationException();
+            }
+
+        } );
     }
 
     @Override

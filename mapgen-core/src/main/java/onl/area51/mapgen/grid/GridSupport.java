@@ -15,6 +15,7 @@
  */
 package onl.area51.mapgen.grid;
 
+import java.util.function.BiConsumer;
 import java.util.function.DoublePredicate;
 import java.util.function.Function;
 import java.util.function.IntPredicate;
@@ -28,6 +29,41 @@ import java.util.stream.Stream;
  */
 public class GridSupport
 {
+
+    /**
+     * Iterates across a grid
+     *
+     * @param xs     x start
+     * @param ys     y start
+     * @param w      width
+     * @param h      height
+     * @param action BiConsumer to call at each location
+     */
+    public static void forEach( int xs, int ys, int w, int h, BiConsumer<Integer, Integer> action )
+    {
+        IntStream.range( ys, ys + h ).forEach( y -> IntStream.range( xs, xs + h ).forEach( x -> action.accept( x, y ) ) );
+    }
+
+    /**
+     * Iterates across a grid
+     *
+     * @param xs     x start
+     * @param ys     y start
+     * @param w      width
+     * @param h      height
+     * @param yf     IntPredicate to filter against Y axis
+     * @param xf     IntPredicate to filter against X axis
+     * @param action BiConsumer to call at each location
+     */
+    public static void forEach( int xs, int ys, int w, int h, IntPredicate yf, IntPredicate xf, BiConsumer<Integer, Integer> action )
+    {
+        IntStream.range( ys, ys + h )
+                .filter( yf )
+                .forEach( y -> IntStream.range( xs, xs + h )
+                        .filter( xf )
+                        .forEach( x -> action.accept( x, y ) )
+                );
+    }
 
     /**
      * Returns a Stream of {@link GridPoint} of all values within a grid
@@ -44,7 +80,7 @@ public class GridSupport
     {
         return IntStream.range( ys, ye )
                 .boxed()
-                .flatMap( y -> IntStream.rangeClosed(xs, xe )
+                .flatMap( y -> IntStream.range( xs, xe )
                         .mapToObj( x -> GridPoint.of( z, x, y ) )
                 );
     }
@@ -73,7 +109,7 @@ public class GridSupport
         return IntStream.range( ys, ye )
                 .filter( yf )
                 .boxed()
-                .flatMap( y -> IntStream.rangeClosed(xs, xe )
+                .flatMap( y -> IntStream.range( xs, xe )
                         .filter( xf )
                         .mapToObj( x -> GridPoint.of( z, x, y ) )
                 );
@@ -140,7 +176,7 @@ public class GridSupport
     public static DoublePredicate betweenPosition( double a, double b )
     {
         DoublePredicate predicate;
-        
+
         if( a > b ) {
             // Handle wrapping around the Greenwich meridian
             predicate = between( a, 360.0 ).or( between( 0.0, b ) );

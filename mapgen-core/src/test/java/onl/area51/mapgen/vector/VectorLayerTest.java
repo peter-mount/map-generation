@@ -19,13 +19,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import onl.area51.mapgen.renderer.layer.DefaultLayer;
-import onl.area51.mapgen.renderer.layer.Layers;
-import onl.area51.mapgen.renderer.layer.LinkedLayers;
-import onl.area51.mapgen.renderer.util.ImageType;
-import onl.area51.mapgen.renderer.util.RendererUtils;
-import onl.area51.mapgen.renderers.GridRenderer;
-import onl.area51.mapgen.renderers.TileRenderer;
+import onl.area51.mapgen.layer.DefaultTiledLayer;
+import onl.area51.mapgen.layer.Layers;
+import onl.area51.mapgen.layer.LinkedLayers;
+import onl.area51.mapgen.util.ImageType;
+import onl.area51.mapgen.renderer.RendererUtils;
+import onl.area51.mapgen.features.GridRenderer;
+import onl.area51.mapgen.features.TileRenderer;
 import onl.area51.mapgen.tilecache.MapTileServer;
 import org.junit.Test;
 import uk.trainwatch.gis.Coordinate;
@@ -53,9 +53,9 @@ public class VectorLayerTest
         layer.addPoint( -0.1275, 51.507222, "London" );
 
         Layers layers = new LinkedLayers();
-        layers.add( new DefaultLayer( layer ).setEnabled( true ) );
-        layers.add( new DefaultLayer( new GridRenderer( true ) ).setEnabled( true ) );
-        layers.add( new DefaultLayer( new TileRenderer( MapTileServer.OPEN_STREET_MAP ) ).setEnabled( true ) );
+        layers.add(new DefaultTiledLayer( layer ).setEnabled( true ) );
+        layers.add(new DefaultTiledLayer( new GridRenderer( true ) ).setEnabled( true ) );
+        layers.add(new DefaultTiledLayer( new TileRenderer( MapTileServer.OPEN_STREET_MAP ) ).setEnabled( true ) );
 
         BufferedImage img = ImageType.INT_RGB.create( 1024, 1024 );
         RendererUtils.render( img, 6, 29, 18, layers );
@@ -74,9 +74,9 @@ public class VectorLayerTest
         layer.addText( -0.1275, 51.507222, "London" );
 
         Layers layers = new LinkedLayers();
-        layers.add( new DefaultLayer( layer ).setEnabled( true ) );
-        layers.add( new DefaultLayer( new GridRenderer( true ) ).setEnabled( true ) );
-        layers.add( new DefaultLayer( new TileRenderer( MapTileServer.OPEN_STREET_MAP ) ).setEnabled( true ) );
+        layers.add(new DefaultTiledLayer( layer ).setEnabled( true ) );
+        layers.add(new DefaultTiledLayer( new GridRenderer( true ) ).setEnabled( true ) );
+        layers.add(new DefaultTiledLayer( new TileRenderer( MapTileServer.OPEN_STREET_MAP ) ).setEnabled( true ) );
 
         BufferedImage img = ImageType.INT_RGB.create( 1024, 1024 );
         RendererUtils.render( img, 6, 29, 18, layers );

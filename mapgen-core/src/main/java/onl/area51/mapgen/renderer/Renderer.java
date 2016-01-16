@@ -15,12 +15,13 @@
  */
 package onl.area51.mapgen.renderer;
 
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.function.Consumer;
-import onl.area51.mapgen.gis.TileReference;
+import onl.area51.mapgen.util.tile.TileReference;
 import static onl.area51.mapgen.renderer.AbstractRenderer.TILE_SIZE;
 
 /**
@@ -45,12 +46,7 @@ public interface Renderer
      * <p>
      * @param action
      */
-    default void render( Consumer<? super Renderer> action )
-    {
-        if( isVisible() ) {
-            action.accept( this );
-        }
-    }
+    void render( Consumer<? super Renderer> action );
 
     /**
      * The bottom Y tile number that is visible
@@ -175,4 +171,18 @@ public interface Renderer
     void drawImage( Image image, int w, int h );
 
     void drawImage( Image image, AffineTransform t );
+
+    /**
+     * Similar to {@link #draw(java.util.function.Consumer) } but enforces that rendering is clipped within the tile and will not overflow outside of it.
+     *
+     * @param action
+     */
+    default void drawClipped( Consumer<Graphics2D> action )
+    {
+        draw( g -> {
+            g.clipRect( getXp(), getYp(), 256, 256 );
+            action.accept( g );
+        } );
+    }
+
 }

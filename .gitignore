@@ -1,3 +1,6 @@
 /map-job/target/
 /map-job/nbproject/
 /map-grib/target/
+/map-grib/nbproject/
+/noaa-sgt/target/
+/mapgen-core/nbproject/

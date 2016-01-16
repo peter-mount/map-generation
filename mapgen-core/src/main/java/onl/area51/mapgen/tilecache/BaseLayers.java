@@ -15,10 +15,10 @@
  */
 package onl.area51.mapgen.tilecache;
 
-import onl.area51.mapgen.renderer.layer.LinkedLayers;
-import onl.area51.mapgen.renderer.layer.Layers;
-import onl.area51.mapgen.renderer.layer.ReadOnlyLayers;
-import onl.area51.mapgen.renderer.layer.DefaultLayer;
+import onl.area51.mapgen.layer.LinkedLayers;
+import onl.area51.mapgen.layer.Layers;
+import onl.area51.mapgen.layer.ReadOnlyLayers;
+import onl.area51.mapgen.layer.DefaultTiledLayer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import onl.area51.mapgen.renderer.Renderer;
@@ -37,7 +37,7 @@ public class BaseLayers
         super( new LinkedLayers() );
         Layers l = getLayers();
         for( MapTileServer s: MapTileServer.values() ) {
-            l.add( new DefaultLayer( s.toString(), supplier.apply( s ) ) );
+            l.add(new DefaultTiledLayer( s.toString(), supplier.apply( s ) ) );
         }
     }
 
