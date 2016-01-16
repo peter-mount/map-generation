@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Exposes the available image types supported by {@link BufferedImage} to name lookup.
+ * <p>
+ * This is primarily used by the Job extensions
  *
  * @author peter
  */
@@ -172,13 +175,13 @@ public enum ImageType
      * <code>IndexColorModel</code> with two colors in the default
      * sRGB <code>ColorSpace</code>: {0,&nbsp;0,&nbsp;0} and
      * {255,&nbsp;255,&nbsp;255}.
-     *
+     * <p>
      * <p>
      * Images with 2 or 4 bits per pixel may be constructed via
      * the <code>BufferedImage</code> constructor that takes a
      * <code>ColorModel</code> argument by supplying a
      * <code>ColorModel</code> with an appropriate map size.
-     *
+     * <p>
      * <p>
      * Images with 8 bits per pixel should use the image types
      * <code>TYPE_BYTE_INDEXED</code> or <code>TYPE_BYTE_GRAY</code>
@@ -203,7 +206,7 @@ public enum ImageType
      * a 256-color 6/6/6 color cube palette with the rest of the colors
      * from 216-255 populated by grayscale values in the
      * default sRGB ColorSpace.
-     *
+     * <p>
      * <p>
      * When color data is stored in an image of this type,
      * the closest color in the colormap is determined

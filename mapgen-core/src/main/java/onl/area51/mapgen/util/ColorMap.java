@@ -17,9 +17,7 @@ package onl.area51.mapgen.util;
 
 import java.awt.Color;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An indexed Colour map which can be used to represent values as colours

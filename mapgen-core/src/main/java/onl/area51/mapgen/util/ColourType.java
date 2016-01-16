@@ -20,6 +20,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Exposes the default colours defined in {@link Color} to name lookup.
+ * <p>
+ * This is primarily used by the Job extensions
  *
  * @author peter
  */

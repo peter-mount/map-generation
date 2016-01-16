@@ -27,6 +27,7 @@ import java.util.Objects;
 import javax.imageio.ImageIO;
 
 /**
+ * Various Image related utilities
  *
  * @author peter
  */

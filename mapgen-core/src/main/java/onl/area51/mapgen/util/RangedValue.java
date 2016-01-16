@@ -15,7 +15,7 @@
  */
 package onl.area51.mapgen.util;
 
-import static onl.area51.mapgen.util.RangedColorMap.create;
+import java.util.DoubleSummaryStatistics;
 
 /**
  * A range of itemised values.
@@ -64,6 +64,28 @@ public interface RangedValue
      */
     int size();
 
+    /**
+     * Create a RangedValue based on statistics
+     *
+     * @param stats statistics
+     * @param size  number of entries
+     *
+     * @return RangedValue
+     */
+    static RangedValue create( DoubleSummaryStatistics stats, int size )
+    {
+        return create( stats.getMin(), stats.getMax(), size );
+    }
+
+    /**
+     * Create a RangedValue based on a range
+     *
+     * @param min  min value
+     * @param max  max value
+     * @param size number of entries
+     *
+     * @return RangedValue
+     */
     static RangedValue create( double min, double max, int size )
     {
         if( min == max ) {
@@ -72,13 +94,11 @@ public interface RangedValue
         if( min > max ) {
             return create( max, min, size );
         }
+
         int maxIndex = size - 1;
-        double Δv = (max - min) / size;
-        double v[] = new double[size];
-        v[0] = min;
-        for( int i = 1; i < size; i++ ) {
-            v[i] = v[i - 1] + Δv;
-        }
+        
+        // Note maxIndex not size here as we don't include index 0 in Δv
+        double Δv = (max - min) / maxIndex;
 
         return new RangedValue()
         {
@@ -103,8 +123,11 @@ public interface RangedValue
                 if( val >= max ) {
                     return maxIndex;
                 }
-                for( int i = 1; i < size; i++ ) {
-                    if( val < v[i] ) {
+                // FIXME this needs a better algorithm if we support large values
+                double v = min;
+                for( int i = 0; i < size; i++ ) {
+                    v += Δv;
+                    if( val < v ) {
                         return i;
                     }
                 }
@@ -116,12 +139,12 @@ public interface RangedValue
             public double getValue( int index )
             {
                 if( index < 0 ) {
-                    return v[0];
+                    return min;
                 }
                 else if( index > maxIndex ) {
-                    return v[maxIndex];
+                    return max;
                 }
-                return v[index];
+                return min + (index * Δv);
             }
 
             @Override
