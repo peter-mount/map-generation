@@ -19,7 +19,6 @@ import java.io.IOException;
 import onl.area51.gfs.grib2.Grib2;
 import onl.area51.gfs.grib2.Grib2MetaData;
 import onl.area51.mapgen.renderer.Renderer;
-import ucar.grib.grib2.Grib2Record;
 import onl.area51.mapgen.grid.GridReferencedDataPoint;
 import onl.area51.mapgen.grid.Grid;
 
@@ -31,10 +30,10 @@ public abstract class AbstractGrib2PointRenderer
         extends AbstractGrib2Renderer
 {
 
-    public AbstractGrib2PointRenderer( Grib2MetaData meta, Grib2 file, Grib2Record record )
+    public AbstractGrib2PointRenderer( Grib2MetaData meta, Grib2 file )
             throws IOException
     {
-        super( meta, file, record );
+        super( meta, file );
     }
 
     public AbstractGrib2PointRenderer( Grib2MetaData meta, Grid data )

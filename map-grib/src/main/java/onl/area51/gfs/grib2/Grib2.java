@@ -25,6 +25,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
+import onl.area51.mapgen.grid.Grid;
 import ucar.grib.QuasiRegular;
 import ucar.grib.grib2.Grib2BitMapSection;
 import ucar.grib.grib2.Grib2DataRepresentationSection;
@@ -55,38 +56,27 @@ public class Grib2
         this.raf = raf;
         input = new Grib2Input( raf );
         input.scan( false, false );
-//        raf.seek( 0);
-//        input.scan( true, false );
     }
 
-    public double[] getDoubleData( Grib2Record record )
+    public Grid getGrid( Grib2MetaData meta )
             throws IOException
     {
-        return toDouble( getData( record ) );
+        return getGrid( meta.getRecord() );
     }
 
-    public double[] getDoubleData( Grib2Record record, boolean expandQuasi )
+    public Grid getGrid( Grib2Record record )
             throws IOException
     {
-        return toDouble( getData( record, expandQuasi ) );
+        return getGrid( record, true );
     }
 
-    private double[] toDouble( float f[] )
-    {
-        double d[] = new double[f.length];
-        for( int i = 0; i < d.length; i++ ) {
-            d[i] = (double) f[i];
-        }
-        return d;
-    }
-
-    public float[] getData( Grib2Record record )
+    public Grid getGrid( Grib2MetaData meta, boolean expandQuasi )
             throws IOException
     {
-        return getData( record, true );
+        return getGrid( meta.getRecord(), expandQuasi );
     }
 
-    public float[] getData( Grib2Record record, boolean expandQuasi )
+    public Grid getGrid( Grib2Record record, boolean expandQuasi )
             throws IOException
     {
         Grib2GridDefinitionSection gds = record.getGDS();
@@ -106,12 +96,13 @@ public class Grib2
 
         // not a quasi grid or don't expand Quasi
         if( (gds.getGdsVars().getOlon() == 0) || !expandQuasi ) {
-            return ds.getData();
+            return Grid.of( ds.getData(), gds.getGdsVars().getNx(), gds.getGdsVars().getNy() );
         }
         else {
             QuasiRegular qr = new QuasiRegular( ds.getData(), (Object) gds );
-            return qr.getData();
+            return Grid.of( qr.getData(), gds.getGdsVars().getNx(), gds.getGdsVars().getNy() );
         }
+
     }
 
     public final int getEdition()

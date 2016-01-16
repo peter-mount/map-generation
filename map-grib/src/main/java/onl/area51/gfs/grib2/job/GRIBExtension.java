@@ -22,10 +22,8 @@ import onl.area51.gfs.grib2.Grib2Filters;
 import static onl.area51.gfs.grib2.job.MiscOps.*;
 import onl.area51.gfs.grib2.layer.Grib2Layer;
 import org.kohsuke.MetaInfServices;
-import ucar.grib.grib2.Grib2Record;
 import uk.trainwatch.job.ext.Extension;
 import uk.trainwatch.job.lang.expr.ExpressionOperation;
-import uk.trainwatch.job.lang.expr.Logic;
 
 /**
  *
@@ -61,7 +59,7 @@ public class GRIBExtension
                     // file = retrieveGrib( hourOffset );
                     case "retrieveGrib":
                         return ( s, a ) -> {
-                            int offset = getInt( args[0], s );
+                            int offset = args[0].getInt( s );
                             try( GribRetriever r = new GribRetriever() ) {
                                 r.selectLatestRun();
                                 return r.retrieveOffset( offset );
@@ -71,7 +69,7 @@ public class GRIBExtension
                     // file = retrieveGribForced( hourOffset );
                     case "retrieveGribForced":
                         return ( s, a ) -> {
-                            int offset = getInt( args[0], s );
+                            int offset = args[0].getInt( s );
                             try( GribRetriever r = new GribRetriever() ) {
                                 r.selectLatestRun();
                                 return r.retrieveOffset( offset, true );
@@ -93,7 +91,7 @@ public class GRIBExtension
                     case "retrieveGrib":
                         return ( s, a ) -> {
                             File file = getFile( args[0], s );
-                            int offset = getInt( args[1], s );
+                            int offset = args[1].getInt( s );
                             try( GribRetriever r = new GribRetriever() ) {
                                 r.selectLatestRun();
                                 return r.retrieveOffset( file, offset );
@@ -105,7 +103,7 @@ public class GRIBExtension
                     case "retrieveGribForced":
                         return ( s, a ) -> {
                             File file = getFile( args[0], s );
-                            int offset = getInt( args[1], s );
+                            int offset = args[1].getInt( s );
                             try( GribRetriever r = new GribRetriever() ) {
                                 r.selectLatestRun();
                                 return r.retrieveOffset( file, offset, true );
@@ -124,8 +122,8 @@ public class GRIBExtension
                     case "retrieveGrib":
                         return ( s, a ) -> {
                             File file = getFile( args[0], s );
-                            int offset = getInt( args[1], s );
-                            boolean force = Logic.isTrue( args[2].invoke( s, a ) );
+                            int offset = args[1].getInt( s );
+                            boolean force = args[2].isTrue( s );
                             try( GribRetriever r = new GribRetriever() ) {
                                 r.selectLatestRun();
                                 r.retrieveOffset( file, offset, force );
@@ -144,7 +142,7 @@ public class GRIBExtension
                     // list = findGribParameter( grib2, pid, catid, paramid );
                     case "findGribParameter":
                         return ( s, a ) -> getGrib2( args[0], s ).records()
-                                .filter( Grib2Filters.filterProduct( getInt( args[1], s ), getInt( args[2], s ), getInt( args[3], s ) ) )
+                                .filter( Grib2Filters.filterProduct( args[1].getInt( s ), args[2].getInt( s ), args[3].getInt( s ) ) )
                                 .collect( Collectors.toList() );
 
                     default:
@@ -158,8 +156,8 @@ public class GRIBExtension
                     // list = findGribParameter( grib2, pid, catid, paramid, levelId );
                     case "findGribParameter":
                         return ( s, a ) -> getGrib2( args[0], s ).records()
-                                .filter( Grib2Filters.filterProduct( getInt( args[1], s ), getInt( args[2], s ), getInt( args[3], s ) ) )
-                                .filter( Grib2Filters.filterLevel1( getInt( args[4], s ) ) )
+                                .filter( Grib2Filters.filterProduct( args[1].getInt( s ), args[2].getInt( s ), args[3].getInt( s ) ) )
+                                .filter( Grib2Filters.filterLevel1( args[4].getInt( s ) ) )
                                 .collect( Collectors.toList() );
 
                     default:
@@ -173,9 +171,9 @@ public class GRIBExtension
                     // list = findGribParameter( grib2, pid, catid, paramid, levelId, level );
                     case "findGribParameter":
                         return ( s, a ) -> getGrib2( args[0], s ).records()
-                                .filter( Grib2Filters.filterProduct( getInt( args[1], s ), getInt( args[2], s ), getInt( args[3], s ) ) )
-                                .filter( Grib2Filters.filterLevel1( getInt( args[4], s ) ) )
-                                .filter( Grib2Filters.filterLevel1( getDouble( args[5], s ) ) )
+                                .filter( Grib2Filters.filterProduct( args[1].getInt( s ), args[2].getInt( s ), args[3].getInt( s ) ) )
+                                .filter( Grib2Filters.filterLevel1( args[4].getInt( s ) ) )
+                                .filter( Grib2Filters.filterLevel1( args[5].getDouble( s ) ) )
                                 .findAny()
                                 .orElse( null );
 
@@ -200,6 +198,26 @@ public class GRIBExtension
                     // new gribTextLater( Grib2, Grib2Record );
                     case "gribTextLayer":
                         return ( s, a ) -> Grib2Layer.textLayer( getGrib2( exp[0], s ), getGrib2Record( exp[1], s ) );
+
+                    default:
+                        return null;
+                }
+
+            case 4:
+                switch( type ) {
+
+                    // new gribTextLater( Grib2, Grib2Record );
+                    case "gribContourLayer":
+                        return ( s, a ) -> {
+                            String t = exp[3].getString( s );
+                            switch( t.toLowerCase() ) {
+                                case "line":
+                                    return Grib2Layer.contourLineLayer( exp[0].get( s ), getGrib2( exp[1], s ), getGrib2Record( exp[2], s ) );
+
+                                default:
+                                    throw new IllegalArgumentException( "Unsupported contour type " + t );
+                            }
+                        };
 
                     default:
                         return null;

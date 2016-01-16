@@ -23,7 +23,6 @@ import onl.area51.gfs.grib2.Grib2MetaData;
 import onl.area51.mapgen.util.tile.TileReference;
 import onl.area51.mapgen.grid.GridReferencedDataPoint;
 import onl.area51.mapgen.renderer.Renderer;
-import ucar.grib.grib2.Grib2Record;
 import uk.trainwatch.gis.Coordinate;
 
 /**
@@ -37,19 +36,18 @@ public class Grib2TextRenderer
 
     private final Color colour;
 
-    public Grib2TextRenderer( Grib2MetaData meta, Grib2 file, Grib2Record record )
+    public Grib2TextRenderer( Grib2MetaData meta, Grib2 file )
             throws IOException
     {
-        this( meta, file, record, Color.BLACK );
+        this( meta, file, Color.BLACK );
     }
 
-    public Grib2TextRenderer( Grib2MetaData meta, Grib2 file, Grib2Record record, Color colour )
+    public Grib2TextRenderer( Grib2MetaData meta, Grib2 file, Color colour )
             throws IOException
     {
-        super( meta, file, record );
+        super( meta, file );
         this.colour = colour;
     }
-    
 
     @Override
     protected void plot( Renderer r, GridReferencedDataPoint p )

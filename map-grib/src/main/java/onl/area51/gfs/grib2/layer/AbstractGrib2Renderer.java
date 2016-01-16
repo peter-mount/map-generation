@@ -28,7 +28,6 @@ import onl.area51.mapgen.grid.GridPoint;
 import onl.area51.mapgen.util.tile.TileReference;
 import onl.area51.mapgen.grid.GridDataPoint;
 import onl.area51.mapgen.renderer.Renderer;
-import ucar.grib.grib2.Grib2Record;
 import uk.trainwatch.gis.Bounds;
 import uk.trainwatch.gis.Coordinate;
 import onl.area51.mapgen.grid.Grid;
@@ -52,10 +51,10 @@ public abstract class AbstractGrib2Renderer
      */
     private final double Δφ;
 
-    public AbstractGrib2Renderer( Grib2MetaData meta, Grib2 file, Grib2Record record )
+    public AbstractGrib2Renderer( Grib2MetaData meta, Grib2 file )
             throws IOException
     {
-        this(meta, Grid.of( file.getDoubleData( record ), meta.getColumns(), meta.getRows() ) );
+        this( meta, file.getGrid( meta.getRecord() ) );
     }
 
     public AbstractGrib2Renderer( Grib2MetaData meta, Grid data )

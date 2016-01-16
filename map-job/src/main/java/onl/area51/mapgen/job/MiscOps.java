@@ -16,7 +16,9 @@
 package onl.area51.mapgen.job;
 
 import java.awt.image.BufferedImage;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import uk.trainwatch.job.Scope;
 import uk.trainwatch.job.lang.expr.ExpressionOperation;
 
@@ -27,26 +29,6 @@ import uk.trainwatch.job.lang.expr.ExpressionOperation;
  */
 public class MiscOps
 {
-
-    public static String getString( ExpressionOperation op, Scope s )
-            throws Exception
-    {
-        return Objects.toString( op.invoke( s ), null );
-    }
-
-    public static int getInt( ExpressionOperation op, Scope s )
-            throws Exception
-    {
-        Number n = (Number) op.invoke( s );
-        return n == null ? 0 : n.intValue();
-    }
-
-    public static double getDouble( ExpressionOperation op, Scope s )
-            throws Exception
-    {
-        Number n = (Number) op.invoke( s );
-        return n == null ? Double.NaN : n.doubleValue();
-    }
 
     public static BufferedImage getImage( ExpressionOperation op, Scope s )
             throws Exception

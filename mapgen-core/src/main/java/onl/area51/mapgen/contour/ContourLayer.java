@@ -31,27 +31,27 @@ public class ContourLayer
 
     public ContourLayer()
     {
+        this( null, DEFAULT_NAME, true );
     }
 
     public ContourLayer( String name )
     {
-        super( name );
+        this( null, name, true );
     }
 
     public ContourLayer( String name, boolean enabled )
     {
-        super( name, enabled );
+        this( null, name, enabled );
     }
 
     public ContourLayer( Contour contour )
     {
-        this.contour = contour;
+        this( contour, DEFAULT_NAME, true );
     }
 
     public ContourLayer( Contour contour, String name )
     {
-        super( name );
-        this.contour = contour;
+        this( contour, name, true );
     }
 
     public ContourLayer( Contour contour, String name, boolean enabled )

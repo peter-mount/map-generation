@@ -35,26 +35,6 @@ import uk.trainwatch.job.lang.expr.ExpressionOperation;
 public class MiscOps
 {
 
-    public static String getString( ExpressionOperation op, Scope s )
-            throws Exception
-    {
-        return Objects.toString( op.invoke( s ), null );
-    }
-
-    public static int getInt( ExpressionOperation op, Scope s )
-            throws Exception
-    {
-        Number n = (Number) op.invoke( s );
-        return n == null ? 0 : n.intValue();
-    }
-
-    public static double getDouble( ExpressionOperation op, Scope s )
-            throws Exception
-    {
-        Number n = (Number) op.invoke( s );
-        return n == null ? 0.0 : n.doubleValue();
-    }
-
     public static File getFile( ExpressionOperation op, Scope s )
             throws Exception
     {

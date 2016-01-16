@@ -48,11 +48,14 @@ public class Grib2MetaData
     private final Double levelValue1;
     private final String levelType2;
     private final Double levelValue2;
+    private final Grib2Record record;
 
     private static final ZoneId UTC = ZoneId.of( "Z" );
 
     public Grib2MetaData( Grib2Record record )
     {
+        this.record = record;
+
         Grib2IndicatorSection is = record.getIs();
         Grib2IdentificationSection id = record.getId();
         Grib2GDSVariables gdsv = record.getGDS().getGdsVars();
@@ -157,6 +160,11 @@ public class Grib2MetaData
     public static ZoneId getUTC()
     {
         return UTC;
+    }
+
+    public Grib2Record getRecord()
+    {
+        return record;
     }
 
 }

@@ -52,6 +52,10 @@ public interface ColorMap
      */
     static ColorMap create( Color... c )
     {
+        Objects.requireNonNull( c );
+        if( c.length < 1 ) {
+            throw new IllegalArgumentException( "Invalid ColorMap size" );
+        }
         // Copy of the array so we know it's immutable
         Color map[] = Arrays.copyOf( c, c.length );
         return new ColorMap()
@@ -83,6 +87,9 @@ public interface ColorMap
     {
         Objects.requireNonNull( a );
         Objects.requireNonNull( b );
+        if( size < 3 ) {
+            throw new IllegalArgumentException( "Invalid ColorMap size" );
+        }
 
         final float α = a.getAlpha() / 255f;
 
@@ -117,5 +124,67 @@ public interface ColorMap
                 return size;
             }
         };
+    }
+
+    /**
+     * A ColorMap consisting of a single colour.
+     *
+     * @param c Colour to return
+     *
+     * @return
+     */
+    static ColorMap single( Color c )
+    {
+        return single( c, 1 );
+    }
+
+    /**
+     * A ColorMap consisting of a single colour.
+     *
+     * @param c    Colour to return
+     * @param size the "size" of the map
+     *
+     * @return
+     */
+    static ColorMap single( Color c, int size )
+    {
+        Objects.requireNonNull( c );
+        if( size < 1 ) {
+            throw new IllegalArgumentException( "Invalid ColorMap size" );
+        }
+        return new ColorMap()
+        {
+            @Override
+            public Color getColor( int index )
+            {
+                return c;
+            }
+
+            @Override
+            public int size()
+            {
+                return size;
+            }
+        };
+    }
+
+    /**
+     * A 11 step ColorMap used for rain/snow fall. Lowest is dark Green, middle brown then red to highest white
+     *
+     * @return
+     */
+    static ColorMap rainfall()
+    {
+        return create( ColorMaps.RAINFALL );
+    }
+
+    /**
+     * A 27 step ColorMap used for temperatures with blue cold and red hot
+     *
+     * @return
+     */
+    static ColorMap temp()
+    {
+        return create( ColorMaps.TEMP );
     }
 }

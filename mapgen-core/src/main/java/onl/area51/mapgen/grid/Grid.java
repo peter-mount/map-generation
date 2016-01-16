@@ -410,4 +410,108 @@ public interface Grid
 
         };
     }
+
+    /**
+     * Creates a Grid with data from a single dimensioned array.
+     *
+     * @param a array
+     * @param w width
+     * @param h height
+     *
+     * @return Grid
+     *
+     * @throws IllegalArgumentException if (w*h) is greater than the length of the array or if w or h is less than 1
+     */
+    static Grid of( float[] a, int w, int h )
+    {
+        Objects.requireNonNull( a );
+        if( w < 1 || h < 1 ) {
+            throw new IllegalArgumentException( "Grid dimensions must be >=1" );
+        }
+        if( (w * h) > a.length ) {
+            throw new IllegalArgumentException( "Grid is larger than array size" );
+        }
+        return new Grid()
+        {
+
+            @Override
+            public int getWidth()
+            {
+                return w;
+            }
+
+            @Override
+            public int getHeight()
+            {
+                return h;
+            }
+
+            @Override
+            public double getValue( int x, int y )
+            {
+                int i = (y * w) + x;
+                if( i < 0 || i >= a.length ) {
+                    throw new ArrayIndexOutOfBoundsException( "Index " + i + " out of bounds 0<=i<" + a.length );
+                }
+                return a[i];
+            }
+
+        };
+    }
+
+    /**
+     * Creates a Grid based on a double dimension array.
+     * <p>
+     * The height is the length of the first dimension whilst the width is the maximum length of all rows.
+     * <p>
+     * When retrieving a value then if the point is out of bounds (row is null or shorter than x) then NaN is returned.
+     *
+     * @param a Array
+     *
+     * @return Grid
+     *
+     * @throws IllegalArgumentException if the array is empty or if either of the width or height would be less than 1
+     */
+    static Grid of( float[][] a )
+    {
+        Objects.requireNonNull( a );
+        if( a.length == 0 ) {
+            throw new IllegalArgumentException( "Cannot create a Grid of zero size" );
+        }
+        int h = a.length;
+        int w = IntStream.range( 0, a.length ).map( i -> a[i].length ).max().getAsInt();
+        if( w < 1 || h < 1 ) {
+            throw new IllegalArgumentException( "Grid dimensions must be >=1" );
+        }
+
+        return new Grid()
+        {
+
+            @Override
+            public int getWidth()
+            {
+                return w;
+            }
+
+            @Override
+            public int getHeight()
+            {
+                return h;
+            }
+
+            @Override
+            public double getValue( int x, int y )
+            {
+                if( y < 0 || y >= a.length ) {
+                    throw new ArrayIndexOutOfBoundsException( "Index " + y + " out of bounds 0<=y<" + a.length );
+                }
+                float r[] = a[y];
+                if( r == null || r.length <= x ) {
+                    return Float.NaN;
+                }
+                return r[x];
+            }
+
+        };
+    }
 }

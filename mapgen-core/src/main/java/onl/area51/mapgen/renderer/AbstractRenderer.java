@@ -165,6 +165,18 @@ public abstract class AbstractRenderer
             private TileReference ref;
 
             @Override
+            public int getX()
+            {
+                return getDelegate().getLeft();
+            }
+
+            @Override
+            public int getY()
+            {
+                return getDelegate().getTop();
+            }
+
+            @Override
             public void setY( int y )
             {
                 throw new UnsupportedOperationException();

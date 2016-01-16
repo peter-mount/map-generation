@@ -18,6 +18,7 @@ package onl.area51.mapgen.util;
 import java.awt.Color;
 import java.util.DoubleSummaryStatistics;
 import java.util.Objects;
+import static onl.area51.mapgen.util.ColorMap.create;
 
 /**
  * A Colour map which will map values to colours.
@@ -160,6 +161,12 @@ public interface RangedColorMap
             @Override
             public Color getColor( int index )
             {
+                if( index < 0 ) {
+                    return map.getColor( 0 );
+                }
+                if( index > maxIndex ) {
+                    return map.getColor( maxIndex );
+                }
                 return map.getColor( index );
             }
 
@@ -200,5 +207,15 @@ public interface RangedColorMap
     static RangedColorMap gradient( Color a, Color b, int size, double min, double max )
     {
         return create( ColorMap.gradient( a, b, size ), min, max );
+    }
+
+    /**
+     * A 27 step ColorMap used for temperatures ranging from -18C to 34C
+     *
+     * @return
+     */
+    static RangedColorMap temp()
+    {
+        return create( ColorMap.temp(), -18, 34 );
     }
 }

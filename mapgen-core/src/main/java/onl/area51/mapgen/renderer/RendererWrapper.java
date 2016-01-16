@@ -36,6 +36,12 @@ public abstract class RendererWrapper
         this.delegate = delegate;
     }
 
+    protected final Renderer getDelegate()
+    {
+        return delegate;
+    }
+    
+
     @Override
     public int getBottom()
     {

@@ -15,9 +15,7 @@
  */
 package onl.area51.mapgen.job;
 
-import java.util.function.Consumer;
 import static onl.area51.mapgen.job.MiscOps.*;
-import onl.area51.mapgen.renderer.Renderer;
 import onl.area51.mapgen.renderer.RendererUtils;
 import onl.area51.mapgen.util.ImageType;
 import onl.area51.mapgen.layer.DefaultTiledLayer;
@@ -33,7 +31,6 @@ import org.kohsuke.MetaInfServices;
 import uk.trainwatch.job.ext.Extension;
 import uk.trainwatch.job.lang.Statement;
 import uk.trainwatch.job.lang.expr.ExpressionOperation;
-import uk.trainwatch.job.lang.expr.Logic;
 
 /**
  * Map Generation extensions to Job
@@ -77,7 +74,7 @@ public class MapExtension
                 switch( name ) {
                     // Image = createImage(w,h);
                     case "createImage":
-                        return ( s, a ) -> ImageType.INT_RGB.create( getInt( args[0], s ), getInt( args[1], s ) );
+                        return ( s, a ) -> ImageType.INT_RGB.create( args[0].getInt( s ), args[1].getInt( s ) );
 
                     default:
                         break;
@@ -88,7 +85,7 @@ public class MapExtension
                 switch( name ) {
                     // Image = createImage("type",w,h);
                     case "createImage":
-                        return ( s, a ) -> ImageType.lookup( getString( args[0], s ) ).create( getInt( args[1], s ), getInt( args[2], s ) );
+                        return ( s, a ) -> ImageType.lookup( args[0].getString( s ) ).create( args[1].getInt( s ), args[2].getInt( s ) );
 
                     default:
                         break;
@@ -104,10 +101,10 @@ public class MapExtension
                      */
                     case "retrieveMapTile":
                         return ( s, a ) -> TileCache.INSTANCE.getTileSync(
-                                MapTileServer.lookup( getString( args[0], s ) ),
-                                getInt( args[1], s ),
-                                getInt( args[2], s ),
-                                getInt( args[3], s )
+                                MapTileServer.lookup( args[0].getString( s ) ),
+                                args[1].getInt( s ),
+                                args[2].getInt( s ),
+                                args[3].getInt( s )
                         );
 
                     default:
@@ -153,13 +150,11 @@ public class MapExtension
                 switch( name ) {
                     // Image = renderMapImage(image,z,x,y,layers);
                     case "renderMap":
-                        return ( s, a ) -> RendererUtils.render(
-                                getImage( args[0], s ),
-                                getInt( args[1], s ),
-                                getDouble( args[2], s ),
-                                getDouble( args[3], s ),
-                                (Consumer<Renderer>) args[4].invoke( s, a )
-                        );
+                        return ( s, a ) -> RendererUtils.render( args[0].get( s ),
+                                                                 args[1].getInt( s ),
+                                                                 args[2].getDouble( s ),
+                                                                 args[3].getDouble( s ),
+                                                                 args[4].get( s ) );
 
                     default:
                         break;
@@ -195,12 +190,12 @@ public class MapExtension
                     // Create a new base tile layer for a server
                     case "baseTileLayer":
                         return ( s, a ) -> {
-                            MapTileServer server = MapTileServer.lookup( getString( exp[0], s ) );
+                            MapTileServer server = MapTileServer.lookup( exp[0].getString( s ) );
                             return new DefaultTiledLayer( server.getTitle(), new TileRenderer( server ) ).setEnabled( true );
                         };
 
                     case "tileGridLayer":
-                        return ( s, a ) -> new DefaultTiledLayer( "Tile grid", new GridRenderer( Logic.isTrue( exp[0].invoke( s, a ) ) ) ).setEnabled( true );
+                        return ( s, a ) -> new DefaultTiledLayer( "Tile grid", new GridRenderer( exp[0].isTrue( s ) ) ).setEnabled( true );
 
                     default:
                         return null;
@@ -211,10 +206,8 @@ public class MapExtension
 
                     case "tileGridLayer":
                         return ( s, a ) -> new DefaultTiledLayer( "Tile grid",
-                                                             new GridRenderer(
-                                                                     Logic.isTrue( exp[0].invoke( s, a ) ),
-                                                                     ColourType.lookup( getString( exp[1], s ) ).getColor()
-                                                             ) )
+                                                                  new GridRenderer( exp[0].isTrue( s ),
+                                                                                    ColourType.lookup( exp[1].getString( s ) ).getColor() ) )
                                 .setEnabled( true );
 
                     default:
