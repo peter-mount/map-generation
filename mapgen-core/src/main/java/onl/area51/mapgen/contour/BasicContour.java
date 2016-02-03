@@ -19,7 +19,6 @@ import java.awt.BasicStroke;
 import onl.area51.mapgen.util.ColorMap;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
@@ -80,10 +79,17 @@ public class BasicContour
     private float scale = 1f;
     private AffineTransform transform;
     private Stroke stroke;
+    private final ContourGraphic g;
 
     BasicContour( ColorMap cmap )
     {
+        this( cmap, ContourGraphic.create() );
+    }
+
+    BasicContour( ColorMap cmap, ContourGraphic g )
+    {
         this.cmap = cmap;
+        this.g = g;
         ncv = cmap.size();
         cv = new float[ncv];
     }
@@ -128,7 +134,7 @@ public class BasicContour
         deltaY = d.width / (ySteps - 1.0);
     }
 
-    private void drawGrid( Graphics g )
+    private void drawGrid()
     {
         int i, j, kx, ky;
 
@@ -167,7 +173,7 @@ public class BasicContour
      *
      * @param g
      */
-    private void drawKernel( Graphics g )
+    private void drawKernel()
     {
         int prevU, prevV, u, v;
 
@@ -342,14 +348,14 @@ public class BasicContour
         }
     }
 
-    private short routine_label_200( Graphics g, boolean workSpace[] )
+    private short routine_label_200( boolean workSpace[] )
     {
         while( true ) {
             xy[elle] = 1.0 * ij[elle] + intersect[iedge - 1];
             xy[1 - elle] = 1.0 * ij[1 - elle];
             workSpace[2 * (xSteps * (ySteps * cntrIndex + ij[1] - 1)
                            + ij[0] - 1) + elle] = true;
-            drawKernel( g );
+            drawKernel();
             if( iflag >= 4 ) {
                 icur = ij[0];
                 jcur = ij[1];
@@ -452,7 +458,7 @@ public class BasicContour
         }
     }
 
-    private void contourPlotKernel( Graphics g, boolean workSpace[] )
+    private void contourPlotKernel( boolean workSpace[] )
     {
         short val_label_200;
 
@@ -477,7 +483,7 @@ public class BasicContour
         cntrIndex = 0;
         prevIndex = -1;
         iflag = 6;
-        drawKernel( g );
+        drawKernel();
         icur = Math.max( 1, Math.min( (int) Math.floor( xy[0] ), xSteps ) );
         jcur = Math.max( 1, Math.min( (int) Math.floor( xy[1] ), ySteps ) );
         ibkey = 0;
@@ -501,7 +507,7 @@ public class BasicContour
                     iedge = iedge - 4;
                 }
                 intersect[iedge - 1] = intersect[ks - 1];
-                val_label_200 = routine_label_200( g, workSpace );
+                val_label_200 = routine_label_200( workSpace );
                 if( val_label_200 == 1 ) {
                     if( routine_label_020() && routine_label_150() ) {
                         return;
@@ -529,7 +535,7 @@ public class BasicContour
                 }
                 iflag = 2 + ibkey;
                 intersect[iedge - 1] = (cval - z1) / (z2 - z1);
-                val_label_200 = routine_label_200( g, workSpace );
+                val_label_200 = routine_label_200( workSpace );
                 if( val_label_200 == 1 ) {
                     if( routine_label_020() && routine_label_150() ) {
                         return;
@@ -560,10 +566,12 @@ public class BasicContour
     @Override
     public void draw( Graphics2D g )
     {
+        this.g.setGraphics( g );
+
         setMeasurements();
 
         if( drawGrid ) {
-            drawGrid( g );
+            drawGrid();
         }
 
         if( cv[0] != cv[1] ) { // Valid data
@@ -580,7 +588,7 @@ public class BasicContour
 
                 int workLength = 2 * xSteps * ySteps * ncv;
                 boolean workSpace[] = new boolean[workLength];
-                contourPlotKernel( g1, workSpace );
+                contourPlotKernel( workSpace );
             }
             finally {
                 g1.dispose();

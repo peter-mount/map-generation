@@ -1,7 +1,5 @@
 // Test retrieval of current grib file
-job "retrieveGrib1";
-run as "test";
-{
+
 /*
  * Note: This is usually disabled due to it connecting to NOAA every time it's run
 */
@@ -10,4 +8,3 @@ run as "test";
     file = retrieveGrib( 0 );
     log file;
 */
-}

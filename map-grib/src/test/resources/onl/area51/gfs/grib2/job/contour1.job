@@ -1,39 +1,35 @@
 // Display a temperature map with line contours
-job "contour1";
-run as "test";
-{
-    gribName = "/home/peter/gfs.grib";
 
-    log "Opening grib " + gribName;
-    grib = openGrib(gribName);
+gribName = "/home/peter/gfs.grib";
 
-    // Temperature at Ground/Water surface
-    temp = findGribParameter(grib,0,0,0,1,0);
-    //temp = findGribParameter(grib,0,0,0,103,2);
+log "Opening grib " + gribName;
+grib = openGrib(gribName);
 
-    colorMap = new tempColourMap();
+// Temperature at Ground/Water surface
+temp = findGribParameter(grib,0,0,0,1,0);
+//temp = findGribParameter(grib,0,0,0,103,2);
 
-    contourLayer = new gribContourLayer( colorMap, grib, temp, "line" );
+colorMap = new tempColourMap();
 
-    layers = new tileLayerSet();
-    layers.add( new tileGridLayer() );
-    layers.add( contourLayer );
-    //layers.add( new gribTextLayer( grib, temp ) );
-    layers.add( new baseTileLayer("Open Street Map") );
-    
-    // The UK & Ireland
-    //image = createImage(1024,1024);
-    //renderMap(image,6,30,18,layers);
-    //writeImage(image,"uk-temp-contour.png");
+contourLayer = new gribContourLayer( colorMap, grib, temp, "line" );
 
-    // England & Wales
-    image = createImage(900,900);
-    renderMap(image,7,61.5,40,layers);
-    writeImage(image,"se-temp-contour.png");
+layers = new tileLayerSet();
+layers.add( new tileGridLayer() );
+layers.add( contourLayer );
+//layers.add( new gribTextLayer( grib, temp ) );
+layers.add( new baseTileLayer("Open Street Map") );
 
-    // Europe - do not use as generates a dark image
-    //image = createImage(1024,1024);
-    //renderMap(image,5,15,9,layers);
-    //writeImage(image,"eu-temp-contour.png");
+// The UK & Ireland
+//image = createImage(1024,1024);
+//renderMap(image,6,30,18,layers);
+//writeImage(image,"uk-temp-contour.png");
 
-}
+// England & Wales
+image = createImage(900,900);
+renderMap(image,7,61.5,40,layers);
+writeImage(image,"se-temp-contour.png");
+
+// Europe - do not use as generates a dark image
+//image = createImage(1024,1024);
+//renderMap(image,5,15,9,layers);
+//writeImage(image,"eu-temp-contour.png");

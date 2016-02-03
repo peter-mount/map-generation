@@ -1,23 +1,20 @@
 // Extract all temperature parameters from a grib file
-job "grib2";
-run as "test";
-{
-    gribName = "/home/peter/gfs.grib";
 
-    log "Opening grib " + gribName;
-    grib = openGrib(gribName);
+gribName = "/home/peter/gfs.grib";
 
-    log "Generating index";
-    t = table();
-    row = t.newHeader();
-    row.newCell( "Index" );
-    row.newCell( "prodId" );
-    row.newCell( "catId" );
-    row.newCell( "nameId" );
-    row.newCell( "Cat" );
-    row.newCell( "Name" );
-    row.newCell( "Unit" );
-    row.newCell( "Product" );
+log "Opening grib " + gribName;
+grib = openGrib(gribName);
 
-    log "Index of available products within "+gribName+"\n" + t;
-}
+log "Generating index";
+t = table();
+row = t.newHeader();
+row.newCell( "Index" );
+row.newCell( "prodId" );
+row.newCell( "catId" );
+row.newCell( "nameId" );
+row.newCell( "Cat" );
+row.newCell( "Name" );
+row.newCell( "Unit" );
+row.newCell( "Product" );
+
+log "Index of available products within "+gribName+"\n" + t;

@@ -1,17 +1,14 @@
 // Test map tile generation with layers
 // This should render a 1024x1024 map of the UK and Ireland
 // with a grid overlay
-job "renderMapImage3";
-run as "test";
-{
-    // UK & Ire zoom 6, x 30..32, y 18..21
 
-    layers = new tileLayerSet();
-    layers.add( new tileGridLayer() );
-    layers.add( new baseTileLayer("Open Street Map") );
-    
-    image = createImage(1024,1024);
-    renderMap(image,6,30,18,layers);
-    writeImage(image,"uk-grid.png");
-    log file;
-}
+// UK & Ire zoom 6, x 30..32, y 18..21
+
+layers = new tileLayerSet();
+layers.add( new tileGridLayer() );
+layers.add( new baseTileLayer("Open Street Map") );
+
+image = createImage(1024,1024);
+renderMap(image,6,30,18,layers);
+writeImage(image,"uk-grid.png");
+log file;
