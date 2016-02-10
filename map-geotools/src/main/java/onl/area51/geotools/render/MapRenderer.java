@@ -21,8 +21,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import onl.area51.mapgen.util.ColourType;

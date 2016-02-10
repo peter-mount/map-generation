@@ -23,11 +23,14 @@ import java.util.Objects;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.grid.Grids;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.opengis.feature.type.FeatureType;
@@ -200,14 +203,42 @@ public class FeatureOps
      */
     public static Statement setMapBounds( ExpressionOperation exp[] )
     {
-        if( exp == null || exp.length != 5 ) {
-            return null;
-        }
+        switch( exp.length ) {
+            case 2:
+                return ( s, a ) -> CrsOps.clipMap( exp[0].get( s ), exp[1].get( s ), CRS.decode( "EPSG:4326" ) );
 
-        return ( s, a ) -> {
-            MapContent map = exp[0].get( s );
-            CrsOps.clipMap( map,
-                            exp[4].getDouble( s ), exp[2].getDouble( s ), exp[1].getDouble( s ), exp[3].getDouble( s ) );
-        };
+            case 3:
+                return ( s, a ) -> CrsOps.clipMap( exp[0].get( s ), exp[1].get( s ), exp[2].get( s ) );
+
+            case 5:
+                return ( s, a ) -> CrsOps.clipMap( exp[0].get( s ), exp[4].getDouble( s ), exp[2].getDouble( s ), exp[1].getDouble( s ), exp[3].getDouble( s ) );
+
+            default:
+                return null;
+        }
     }
+
+    public static ExpressionOperation createReferencedEnvelope( ExpressionOperation exp[] )
+    {
+        switch( exp.length ) {
+            // new referencedEnvelope( westlong,northlat,eastlong,southlat)
+            case 4:
+                return ( s, a ) -> new ReferencedEnvelope( exp[0].getDouble( s ),
+                                                           exp[2].getDouble( s ),
+                                                           exp[3].getDouble( s ),
+                                                           exp[1].getDouble( s ),
+                                                           DefaultGeographicCRS.WGS84 );
+
+            case 5:
+                    return ( s, a ) -> new ReferencedEnvelope( exp[0].getDouble( s ),
+                                                               exp[2].getDouble( s ),
+                                                               exp[3].getDouble( s ),
+                                                               exp[1].getDouble( s ),
+                                                               CrsOps.getCoordinateReferenceSystem( exp[4], s ) );
+
+            default:
+                return null;
+        }
+    }
+
 }

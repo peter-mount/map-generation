@@ -54,6 +54,9 @@ public class GeotoolsExtension
             case "mapContent":
                 return FeatureOps.getMapContent( exp );
 
+            case "orthoLineDef":
+                return GridOps.newOrthoLineDef( exp );
+
             default:
                 return null;
         }
@@ -64,8 +67,14 @@ public class GeotoolsExtension
     {
         switch( name ) {
 
+            case "createReferencedEnvelope":
+                return FeatureOps.createReferencedEnvelope( args );
+
             case "createFill":
                 return StyleOps.createFill( args );
+
+            case "createLineGrid":
+                return GridOps.createLineGrid( args );
 
             case "createLineStyle":
                 return StyleOps.createLineStyle( args );
@@ -88,6 +97,9 @@ public class GeotoolsExtension
                     default:
                         return null;
                 }
+
+            case "createSquareGrid":
+                return GridOps.createSquareGrid( args );
 
             case "createStroke":
                 return StyleOps.createStroke( args );

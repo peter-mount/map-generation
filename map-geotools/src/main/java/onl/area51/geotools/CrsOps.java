@@ -18,6 +18,7 @@ package onl.area51.geotools;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.metadata.extent.Extent;
 import org.opengis.metadata.extent.GeographicBoundingBox;
 import org.opengis.metadata.extent.GeographicExtent;
@@ -54,6 +55,9 @@ public class CrsOps
             throws Exception
     {
         Object o = exp.invoke( s );
+        if( o == null ) {
+            return DefaultGeographicCRS.WGS84;
+        }
         if( o instanceof CoordinateReferenceSystem ) {
             return (CoordinateReferenceSystem) o;
         }
@@ -116,7 +120,15 @@ public class CrsOps
             throws TransformException,
                    FactoryException
     {
-        ReferencedEnvelope bbox = new ReferencedEnvelope( southBoundLatitude, northBoundLatitude, westBoundLongitude, eastBoundLongitude, boundsCrs );
+        clipMap( map,
+                 new ReferencedEnvelope( southBoundLatitude, northBoundLatitude, westBoundLongitude, eastBoundLongitude, boundsCrs ),
+                 boundsCrs );
+    }
+
+    public static void clipMap( MapContent map, ReferencedEnvelope bbox, CoordinateReferenceSystem boundsCrs )
+            throws TransformException,
+                   FactoryException
+    {
         ReferencedEnvelope envelope = bbox.transform( map.getCoordinateReferenceSystem(), true );
         map.getViewport().setBounds( envelope );
     }

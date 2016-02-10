@@ -1,0 +1,26 @@
+//
+// Tests rendering a grid onto a map
+//
+
+mapBounds = createReferencedEnvelope( 110,-5,160,-45);
+log mapBounds;
+
+map = new mapContent();
+
+worldSource = getFeatureSource( "/usr/local/shape/50m_cultural/ne_50m_admin_0_countries.shp" );
+
+stroke = createStroke( "black", 1);
+landFill = createFill( "green", 1 );
+
+landStyle = createPolygonStyle( stroke, landFill );
+gridStyle = createPolygonStyle( stroke );
+
+layer = new featureLayer( worldSource, landStyle );
+map.addLayer( layer );
+
+grid = new featureLayer( createSquareGrid( mapBounds, 10, 0.5 ), gridStyle );
+map.addLayer( grid );
+
+setMapBounds( map, mapBounds );
+size = getMapBounds(map,700);
+renderMapContent( "australia1.png", map, "cyan", "black", size);

@@ -1,0 +1,32 @@
+//
+// Tests rendering a grid onto a map
+//
+
+mapBounds = createReferencedEnvelope( 110,-5,160,-45);
+log mapBounds;
+
+map = new mapContent();
+
+worldSource = getFeatureSource( "/usr/local/shape/50m_cultural/ne_50m_admin_0_countries.shp" );
+
+stroke = createStroke( "black", 1);
+landFill = createFill( "green", 1 );
+
+landStyle = createPolygonStyle( stroke, landFill );
+gridStyle = createPolygonStyle( stroke );
+
+layer = new featureLayer( worldSource, landStyle );
+map.addLayer( layer );
+
+grid = new featureLayer( createLineGrid( mapBounds,
+    new orthoLineDef( "VERTICAL", 2, 10 ),
+    new orthoLineDef( "VERTICAL", 2, 2 ),
+    new orthoLineDef( "HORIZONTAL", 2, 10 ),
+    new orthoLineDef( "HORIZONTAL", 2, 2 )
+    ),
+    gridStyle );
+map.addLayer( grid );
+
+setMapBounds( map, mapBounds );
+size = getMapBounds(map,700);
+renderMapContent( "australia2.png", map, "cyan", "black", size);
