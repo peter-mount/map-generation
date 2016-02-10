@@ -158,11 +158,11 @@ public class FeatureOps
     public static ExpressionOperation getMapContent( ExpressionOperation exp[] )
     {
         if( exp == null || exp.length == 0 ) {
-            return ( s, a ) -> new MapContent();
+            return ( s, a ) -> new CloseableMapContent( s );
         }
         else {
             return ( s, a ) -> {
-                MapContent map = new MapContent();
+                CloseableMapContent map = new CloseableMapContent( s );
                 for( Object o: ExpressionOperation.invoke( exp, s ) ) {
                     if( o instanceof Collection ) {
                         map.addLayers( (Collection<Layer>) o );

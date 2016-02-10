@@ -15,10 +15,7 @@
  */
 package onl.area51.geotools;
 
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.io.File;
-import java.util.function.Consumer;
 import onl.area51.geotools.render.MapRenderer;
 import onl.area51.mapgen.util.ImageType;
 import org.geotools.geometry.jts.ReferencedEnvelope;
