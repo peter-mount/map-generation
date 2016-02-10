@@ -60,6 +60,11 @@ public enum ColourType
         return TYPES.getOrDefault( n == null ? "" : n.toUpperCase().trim(), BLACK );
     }
 
+    public static ColourType lookupOrNull( String n )
+    {
+        return n == null ? null : TYPES.get( n.toUpperCase().trim() );
+    }
+
     private ColourType( Color colour )
     {
         this.colour = colour;

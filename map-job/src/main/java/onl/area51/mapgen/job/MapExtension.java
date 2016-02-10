@@ -15,6 +15,7 @@
  */
 package onl.area51.mapgen.job;
 
+import java.awt.geom.Rectangle2D;
 import static onl.area51.mapgen.job.MiscOps.*;
 import onl.area51.mapgen.renderer.RendererUtils;
 import onl.area51.mapgen.util.ImageType;
@@ -204,6 +205,10 @@ public class MapExtension
             case 2:
                 switch( type ) {
 
+                    // new rectangle(w,h)
+                    case "rectangle":
+                        return ( s, a ) -> new Rectangle2D.Double( 0.0, 0.0, exp[0].getDouble( s ), exp[1].getDouble( s ) );
+
                     case "tileGridLayer":
                         return ( s, a ) -> new DefaultTiledLayer( "Tile grid",
                                                                   new GridRenderer( exp[0].isTrue( s ),
@@ -214,6 +219,12 @@ public class MapExtension
                         return null;
                 }
 
+            case 4:
+                switch( type ) {
+                    // new rectangle(x,y,w,h)
+                    case "rectangle":
+                        return ( s, a ) -> new Rectangle2D.Double( exp[0].getDouble( s ), exp[1].getDouble( s ), exp[2].getDouble( s ), exp[3].getDouble( s ) );
+                }
             default:
                 return null;
         }

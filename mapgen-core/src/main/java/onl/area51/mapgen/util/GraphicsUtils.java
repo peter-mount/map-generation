@@ -62,7 +62,7 @@ public class GraphicsUtils
             g.dispose();
         }
     }
-
+    
     /**
      * Returns the image bounds
      *

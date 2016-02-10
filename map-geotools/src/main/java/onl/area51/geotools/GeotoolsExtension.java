@@ -15,7 +15,6 @@
  */
 package onl.area51.geotools;
 
-import org.geotools.map.MapContent;
 import org.geotools.styling.SLD;
 import org.kohsuke.MetaInfServices;
 import uk.trainwatch.job.ext.Extension;
@@ -75,7 +74,7 @@ public class GeotoolsExtension
                 return RenderOps.createMapImage( args );
 
             case "createPointStyle":
-                return StyleOps.createPointStyle(args );
+                return StyleOps.createPointStyle( args );
 
             case "createPolygonStyle":
                 return StyleOps.createPolygonStyle( args );
@@ -99,6 +98,8 @@ public class GeotoolsExtension
             case "getFeatureSource":
                 return ( s, a ) -> MiscOps.getFileDataStore( args[0], s ).getFeatureSource();
 
+            case "getMapBounds":
+                return RenderOps.getMapBounds( args );
             default:
                 break;
         }

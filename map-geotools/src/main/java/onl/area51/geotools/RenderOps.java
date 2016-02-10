@@ -15,18 +15,14 @@
  */
 package onl.area51.geotools;
 
-import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.util.Objects;
-import onl.area51.mapgen.util.ColourType;
-import onl.area51.mapgen.util.GraphicsUtils;
-import static onl.area51.mapgen.util.GraphicsUtils.*;
+import java.io.File;
+import java.util.function.Consumer;
+import onl.area51.geotools.render.MapRenderer;
 import onl.area51.mapgen.util.ImageType;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
-import org.geotools.renderer.GTRenderer;
-import org.geotools.renderer.lite.StreamingRenderer;
 import uk.trainwatch.job.lang.Statement;
 import uk.trainwatch.job.lang.expr.ExpressionOperation;
 
@@ -52,6 +48,18 @@ public class RenderOps
         return new Rectangle( 0, 0, width, (int) Math.round( width * heightToWidth ) );
     }
 
+    public static ExpressionOperation getMapBounds( ExpressionOperation exp[] )
+    {
+        if( exp.length == 2 ) {
+            return ( s, a ) -> {
+                MapContent map = exp[0].get( s );
+                int width = exp[1].getInt( s );
+                return getMapBounds( map, width );
+            };
+        }
+        return null;
+    }
+
     public static ExpressionOperation createMapImage( ExpressionOperation exp[] )
     {
         switch( exp.length ) {
@@ -75,90 +83,17 @@ public class RenderOps
         }
     }
 
-    /**
-     * Render a map onto an image.
-     *
-     * @param map   MapContent
-     * @param image Image
-     */
-    public static void renderMap( MapContent map, BufferedImage image )
-    {
-        renderMap( map, image, getImageBounds( image ) );
-    }
-
-    /**
-     * Render a map onto an image
-     *
-     * @param map         MapContent
-     * @param image       Image
-     * @param imageBounds Bounds within the image to render into
-     */
-    public static void renderMap( MapContent map, BufferedImage image, Rectangle imageBounds )
-    {
-        draw( image, g -> {
-          ReferencedEnvelope mapBounds = map.getViewport().getBounds();
-
-          GTRenderer renderer = new StreamingRenderer();
-          renderer.setMapContent( map );
-          renderer.paint( g, imageBounds, mapBounds );
-      } );
-    }
-
     public static Statement renderMap( ExpressionOperation args[] )
     {
+        // Must have 2 args, map & output
         if( args == null || args.length < 2 ) {
             return null;
         }
 
-        return ( s, a ) -> {
-            BufferedImage image = null;
-            MapContent map = null;
-
-            Color fg = null, bg = null;
-            Rectangle imageBounds = null;
-            for( Object o: ExpressionOperation.invoke( args, s ) ) {
-                if( o instanceof BufferedImage ) {
-                    image = (BufferedImage) o;
-                }
-                else if( o instanceof MapContent ) {
-                    map = (MapContent) o;
-                }
-                else if( o instanceof Color ) {
-                    if( bg == null ) {
-                        bg = (Color) o;
-                    }
-                    else {
-                        bg = (Color) o;
-                    }
-                }
-                else if( o instanceof Rectangle ) {
-                    imageBounds = (Rectangle) o;
-                }
-                else {
-                    ColourType ct = ColourType.lookup( o.toString() );
-                    if( ct != null ) {
-                        if( bg == null ) {
-                            bg = ct.getColor();
-                        }
-                        else {
-                            fg = ct.getColor();
-                        }
-                    }
-                }
-            }
-
-            Objects.requireNonNull( image, "Image is requried" );
-            Objects.requireNonNull( map, "MapContent is required" );
-
-            if( imageBounds == null ) {
-                imageBounds = GraphicsUtils.getImageBounds( image );
-            }
-
-            if( fg != null || bg != null ) {
-                GraphicsUtils.clearImage( image, bg, fg, imageBounds );
-            }
-
-            renderMap( map, image );
-        };
+        return ( s, a ) -> MapRenderer.builder()
+                .invokeAll( s, args )
+                .build()
+                .render();
     }
+
 }
