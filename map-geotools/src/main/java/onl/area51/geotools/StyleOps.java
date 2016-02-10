@@ -126,4 +126,18 @@ public class StyleOps
             return StyleUtils.createPointStyle( t, width, stroke, fill );
         };
     }
+
+    public static ExpressionOperation createGreyscaleStyle( ExpressionOperation exp[] )
+    {
+        switch( exp.length ) {
+            case 0:
+                return ( s, a ) -> StyleUtils.createGreyscaleStyle( 1 );
+
+            case 1:
+                return ( s, a ) -> StyleUtils.createGreyscaleStyle( exp[0].getInt( s ) );
+
+            default:
+                return null;
+        }
+    }
 }

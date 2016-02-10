@@ -1,0 +1,11 @@
+// Tests the netcdf module
+//
+// Test getting a specific grid from a grib file
+//
+
+log "Opening gfs";
+try( r = new cdfReader( "/home/peter/gfs.grib" ) ) {
+
+    temp = cdfGetGrid( r, "Temperature_surface" );
+    
+}

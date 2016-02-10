@@ -97,6 +97,24 @@
             <version>${geotools.version}</version>
         </dependency>
         
+        <!-- should be in grib module? -->
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-netcdf</artifactId>
+            <version>${geotools.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>opendap</groupId>
+                    <artifactId>opendap</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-grib</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>uk.trainwatch.job</groupId>
             <artifactId>job-language</artifactId>

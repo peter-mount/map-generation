@@ -1,0 +1,12 @@
+// Tests the netcdf module
+//
+// List coverage names
+//
+
+log "Opening gfs";
+try( r = new cdfReader( "/home/peter/gfs.grib" ) ) {
+    names = cdfGetGridCoverageNames(r);
+    names.forEach( n -> {
+        log n;
+    } );
+}

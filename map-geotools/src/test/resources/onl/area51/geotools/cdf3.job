@@ -1,0 +1,32 @@
+// Tests the netcdf module
+//
+// Test getting a specific grid from a grib file
+//
+
+log "Opening gfs";
+try( r = new cdfReader( "/home/peter/gfs.grib" ) ) {
+
+    map = new mapContent();
+
+    worldSource = getFeatureSource( "/usr/local/shape/50m_cultural/ne_50m_admin_0_countries.shp" );
+
+    // Green land
+    stroke = createStroke( "black", 1);
+    fill = createFill( "green", 0.5 );
+    //style = createPolygonStyle( stroke, fill );
+    style = createLineStyle( stroke );
+    layer = new featureLayer( worldSource, style );
+
+    temp = cdfGetGrid( r, "Temperature_surface" );
+    tempStyle = createGreyscaleStyle(  );
+    tempLayer = new gridCoverageLayer( temp, tempStyle );
+    map.addLayer( tempLayer );
+
+    map.addLayer( layer );
+
+    // Now draw the map
+    setMapBounds( map, -11, 62, 4, 48 );
+    size = getMapBounds(map,700);
+    renderMapContent( "cdf3.png", map, "white", "black", size);
+
+}

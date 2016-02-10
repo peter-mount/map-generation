@@ -51,6 +51,9 @@ public class GeotoolsExtension
             case "featureLayer":
                 return FeatureOps.getFeatureLayer( exp );
 
+            case "gridCoverageLayer":
+                return Grid2DOps.getGridCoverageLayer( exp );
+
             case "mapContent":
                 return FeatureOps.getMapContent( exp );
 
@@ -72,6 +75,9 @@ public class GeotoolsExtension
 
             case "createFill":
                 return StyleOps.createFill( args );
+
+            case "createGreyscaleStyle":
+                return StyleOps.createGreyscaleStyle( args );
 
             case "createLineGrid":
                 return GridOps.createLineGrid( args );

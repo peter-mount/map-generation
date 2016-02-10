@@ -17,16 +17,22 @@ package onl.area51.geotools;
 
 import java.awt.Color;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.styling.ChannelSelection;
+import org.geotools.styling.ContrastEnhancement;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Graphic;
 import org.geotools.styling.Mark;
+import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
+import org.geotools.styling.SLD;
+import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.styling.Symbolizer;
 import org.opengis.filter.FilterFactory;
+import org.opengis.style.ContrastMethod;
 
 /**
  * A collection of utilities for creating stiles
@@ -94,4 +100,18 @@ public class StyleUtils
     {
         return createStyle( STYLE_FACTORY.createPointSymbolizer( gr, null ) );
     }
+
+    public static Style createGreyscaleStyle( int band )
+    {
+        ContrastEnhancement ce = STYLE_FACTORY.contrastEnhancement(FILTER_FACTORY.literal( 1.0 ), ContrastMethod.NORMALIZE );
+        SelectedChannelType sct = STYLE_FACTORY.createSelectedChannelType( String.valueOf( band ), ce );
+
+        RasterSymbolizer sym = STYLE_FACTORY.getDefaultRasterSymbolizer();
+        ChannelSelection sel = STYLE_FACTORY.channelSelection( sct );
+        sym.setChannelSelection( sel );
+
+        return createStyle( sym );
+//        return SLD.wrapSymbolizers( sym );
+    }
+
 }

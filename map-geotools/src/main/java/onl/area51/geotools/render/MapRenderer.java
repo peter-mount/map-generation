@@ -32,6 +32,7 @@ import uk.trainwatch.util.Consumers;
 import static onl.area51.mapgen.util.GraphicsUtils.*;
 import uk.trainwatch.job.Scope;
 import uk.trainwatch.job.lang.expr.ExpressionOperation;
+import uk.trainwatch.util.MapBuilder;
 
 /**
  * Render a map
@@ -365,6 +366,11 @@ public interface MapRenderer
                             ReferencedEnvelope mapBounds = map.getViewport().getBounds();
 
                             GTRenderer renderer = new StreamingRenderer();
+                            renderer.setRendererHints( MapBuilder.builder()
+                                    .add( StreamingRenderer.ADVANCED_PROJECTION_HANDLING_KEY, Boolean.TRUE )
+                                    .add( StreamingRenderer.CONTINUOUS_MAP_WRAPPING, Boolean.TRUE )
+                                    .build() );
+                            System.out.println(renderer.getRendererHints());
                             renderer.setMapContent( map );
                             renderer.paint( g, bounds, mapBounds );
                         } );
