@@ -1,0 +1,24 @@
+// Generates a simple vector map of the UK
+//
+// Note: This requires the ne_50m_admin_0_countries.dbf from 50m-cultural-vectors
+//
+// http://www.naturalearthdata.com/downloads/50m-cultural-vectors/
+//
+
+worldSource = getFeatureSource( "/usr/local/shape/50m_cultural/ne_50m_admin_0_countries.shp" );
+
+layer = new featureLayer( worldSource );
+
+map = new mapContent( "UK MAP 1" );
+map.addLayer( layer );
+
+setMapBounds( map, -11, 62, 4, 48 );
+
+image = createMapImage(map,700);
+
+log image.getWidth();
+log image.getHeight();
+
+renderMapContent(image,map, "white", "black");
+
+writeImage(image,"uk1.png");

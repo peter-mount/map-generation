@@ -1,0 +1,25 @@
+// Generates a simple vector map of Europe
+//
+// Note: This requires the ne_50m_admin_0_countries.dbf from 50m-cultural-vectors
+//
+// http://www.naturalearthdata.com/downloads/50m-cultural-vectors/
+//
+
+worldSource = getFeatureSource( "/usr/local/shape/50m_cultural/ne_50m_admin_0_countries.shp" );
+
+layer = new featureLayer( worldSource );
+
+map = new mapContent( "Europe Map 1" );
+map.addLayer( layer );
+
+// Extreme Bounds from https://en.wikipedia.org/wiki/Extreme_points_of_Europe
+setMapBounds( map, -32, 33, 70, 82 );
+
+image = createMapImage(map,700);
+
+log image.getWidth();
+log image.getHeight();
+
+renderMapContent(image,map, "white", "black");
+
+writeImage(image,"europe1.png");
