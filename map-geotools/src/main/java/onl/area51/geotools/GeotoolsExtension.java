@@ -65,8 +65,20 @@ public class GeotoolsExtension
     {
         switch( name ) {
 
+            case "createFill":
+                return StyleOps.createFill( args );
+
+            case "createLineStyle":
+                return StyleOps.createLineStyle( args );
+
             case "createMapImage":
                 return RenderOps.createMapImage( args );
+
+            case "createPointStyle":
+                return StyleOps.createPointStyle(args );
+
+            case "createPolygonStyle":
+                return StyleOps.createPolygonStyle( args );
 
             case "createSimpleStyle":
                 switch( args.length ) {
@@ -77,6 +89,9 @@ public class GeotoolsExtension
                     default:
                         return null;
                 }
+
+            case "createStroke":
+                return StyleOps.createStroke( args );
 
             case "getFeatureReader":
                 return ( s, a ) -> MiscOps.getFileDataStore( args[0], s ).getFeatureReader();
