@@ -15,6 +15,7 @@
  */
 package onl.area51.mapgen.util;
 
+import java.awt.Rectangle;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.DirectColorModel;
@@ -246,6 +247,11 @@ public enum ImageType
 
     public BufferedImage create( int w, int h )
     {
-        return new BufferedImage( h, h, type );
+        return new BufferedImage( w, h, type );
+    }
+
+    public BufferedImage create( Rectangle r )
+    {
+        return create( r.width, r.height );
     }
 }
