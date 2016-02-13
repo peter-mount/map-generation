@@ -374,7 +374,7 @@ public interface MapRenderer
                             renderer.setMapContent( map );
                             renderer.paint( g, bounds, mapBounds );
                         } );
-
+                
                 // Now the final renderer
                 if( img != null ) {
                     return () -> draw( img, finalOp );

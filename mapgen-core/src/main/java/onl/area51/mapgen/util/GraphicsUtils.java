@@ -62,7 +62,7 @@ public class GraphicsUtils
             g.dispose();
         }
     }
-    
+
     /**
      * Returns the image bounds
      *
@@ -72,7 +72,7 @@ public class GraphicsUtils
      */
     public static Rectangle getImageBounds( BufferedImage image )
     {
-        return new Rectangle( image.getWidth()-1, image.getHeight()-1 );
+        return new Rectangle( image.getWidth() - 1, image.getHeight() - 1 );
     }
 
     /**
