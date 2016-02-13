@@ -88,7 +88,6 @@ public class LineLayerTest
         GraphicsUtils.draw( img, chart );
 
         ImageUtils.writeImage( img, "rtppm_se_201601.png" );
-        throw new RuntimeException();
     }
 
 }

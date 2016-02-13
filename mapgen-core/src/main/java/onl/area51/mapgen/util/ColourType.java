@@ -17,7 +17,7 @@ package onl.area51.mapgen.util;
 
 import java.awt.Color;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import uk.trainwatch.util.MapBuilder;
 
 /**
  * Exposes the default colours defined in {@link Color} to name lookup.
@@ -31,8 +31,11 @@ public enum ColourType
 
     WHITE( Color.WHITE ),
     LIGHT_GRAY( Color.LIGHT_GRAY ),
+    LIGHT_GREY( Color.LIGHT_GRAY ),
     GRAY( Color.GRAY ),
+    GREY( Color.GRAY ),
     DARK_GRAY( Color.DARK_GRAY ),
+    DARK_GREY( Color.DARK_GRAY ),
     BLACK( Color.BLACK ),
     RED( Color.RED ),
     PINK( Color.PINK ),
@@ -43,26 +46,25 @@ public enum ColourType
     CYAN( Color.CYAN ),
     BLUE( Color.BLUE );
     private final Color colour;
-    private static final Map<String, ColourType> TYPES = new ConcurrentHashMap<>();
 
-    static {
-        for( ColourType t: values() ) {
-            String n = t.name();
-            TYPES.put( n, t );
-            if( n.indexOf( '_' ) > -1 ) {
-                TYPES.put( n.replace( '_', ' ' ), t );
-            }
-        }
-    }
+    private static final Map<String, ColourType> TYPES = MapBuilder.<String, ColourType>builder()
+            .readonly()
+            .concurrent()
+            .keyMapper( n -> n == null ? "" : n.toUpperCase().trim() )
+            .key( Enum::name )
+            .addAll( values() )
+            .key( v -> v.name().replaceAll( "_", " " ) )
+            .addAll( values() )
+            .build();
 
     public static ColourType lookup( String n )
     {
-        return TYPES.getOrDefault( n == null ? "" : n.toUpperCase().trim(), BLACK );
+        return TYPES.getOrDefault( n, BLACK );
     }
 
     public static ColourType lookupOrNull( String n )
     {
-        return n == null ? null : TYPES.get( n.toUpperCase().trim() );
+        return TYPES.getOrDefault( n, null );
     }
 
     private ColourType( Color colour )

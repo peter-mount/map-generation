@@ -16,9 +16,9 @@
 package onl.area51.mapgen.tilecache;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import uk.trainwatch.util.MapBuilder;
 
 /**
  *
@@ -37,19 +37,21 @@ public enum MapTileServer
     private final int minZoom;
     private final int maxZoom;
 
-    private static final Map<String, MapTileServer> SERVERS = new ConcurrentHashMap<>();
-
-    static {
-        for( MapTileServer s: values() ) {
-            SERVERS.put( s.name().toUpperCase(), s );
-            SERVERS.put( s.name().replace( '_', ' ' ).toUpperCase(), s );
-            SERVERS.put( s.getTitle().toUpperCase(), s );
-        }
-    }
+    private static final Map<String, MapTileServer> SERVERS = MapBuilder.<String, MapTileServer>builder()
+            .readonly()
+            .concurrent()
+            .keyMapper( n -> n == null || n.isEmpty() ? "" : n.trim().toUpperCase() )
+            .key( v -> v.name().toUpperCase() )
+            .addAll( values() )
+            .key( v -> v.name().replace( '_', ' ' ).toUpperCase() )
+            .addAll( values() )
+            .key( v -> v.getTitle().toUpperCase() )
+            .addAll( values() )
+            .build();
 
     public static MapTileServer lookup( String name )
     {
-        return name == null || name.isEmpty() ? OPEN_STREET_MAP : SERVERS.getOrDefault( name.trim().toUpperCase(), OPEN_STREET_MAP );
+        return SERVERS.getOrDefault( name, OPEN_STREET_MAP );
     }
 
     public static ComboBoxModel newComboBoxModel()

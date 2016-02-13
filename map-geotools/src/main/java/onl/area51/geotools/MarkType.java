@@ -17,9 +17,9 @@ package onl.area51.geotools;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import org.geotools.styling.Mark;
+import uk.trainwatch.util.MapBuilder;
 
 /**
  * Allow default Mark's to be referenced by name
@@ -37,13 +37,11 @@ public enum MarkType
     TRIANGLE( "triangle", () -> StyleUtils.STYLE_FACTORY.getTriangleMark() ),
     X( "x", () -> StyleUtils.STYLE_FACTORY.getXMark() );
 
-    private static final Map<String, MarkType> TYPES = new ConcurrentHashMap<>();
-
-    static {
-        for( MarkType t: values() ) {
-            TYPES.put( t.getName(), t );
-        }
-    }
+    private static final Map<String, MarkType> TYPES = MapBuilder.<String, MarkType>builder()
+            .keyMapper( k -> k == null ? "" : k.toLowerCase().trim() )
+            .key( MarkType::getName )
+            .addAll( values() )
+            .build();
 
     public static MarkType lookup( String n )
     {

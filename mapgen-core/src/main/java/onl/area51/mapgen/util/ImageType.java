@@ -21,7 +21,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DirectColorModel;
 import java.awt.image.IndexColorModel;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import uk.trainwatch.util.MapBuilder;
 
 /**
  * Exposes the available image types supported by {@link BufferedImage} to name lookup.
@@ -218,21 +218,19 @@ public enum ImageType
      */
     BYTE_INDEXED( BufferedImage.TYPE_BYTE_INDEXED );
     private final int type;
-    private static final Map<String, ImageType> TYPES = new ConcurrentHashMap<>();
-
-    static {
-        for( ImageType t: values() ) {
-            String n = t.name();
-            if( n.startsWith( "_" ) ) {
-                n = n.substring( 1 );
-            }
-            TYPES.put( n, t );
-        }
-    }
+    private static final Map<String, ImageType> TYPES = MapBuilder.<String, ImageType>builder()
+            .readonly()
+            .concurrent()
+            .keyMapper( n -> n == null ? "" : n.toUpperCase().trim() )
+            .key( v -> {
+                String n = v.name();
+                return n.startsWith( "_" ) ? n.substring( 1 ) : n;
+            } )
+            .build();
 
     public static ImageType lookup( String n )
     {
-        return TYPES.getOrDefault( n == null ? "" : n.toUpperCase().trim(), INT_RGB );
+        return TYPES.getOrDefault( n, INT_RGB );
     }
 
     private ImageType( int type )
