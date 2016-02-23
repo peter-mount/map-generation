@@ -16,7 +16,8 @@
 package onl.area51.mapgen.features;
 
 import java.awt.Color;
-import java.util.concurrent.TimeoutException;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import onl.area51.mapgen.renderer.Renderer;
@@ -41,9 +42,11 @@ public class TileRenderer
     public TileRenderer( MapTileServer server )
     {
         this( server,
-              t -> {
+              t -> 
+                      {
               },
-              ( t, e ) -> {
+              ( t, e ) -> 
+                      {
               } );
     }
 
@@ -71,17 +74,31 @@ public class TileRenderer
 
     private Tile getTile( Renderer r )
     {
-        if( r.getImageObserver() == null ) {
-            try {
+        if( r.getImageObserver() == null )
+        {
+            try
+            {
                 return TileCache.INSTANCE.getTileSync( server, r.getZoom(), r.getX(), r.getY() );
-            }
-            catch( InterruptedException |
-                   TimeoutException ex ) {
-                throw new RuntimeException( "Failed to get tile" + server + " " + r.getZoom() + " " + r.getX() + "," + r.getY(), ex );
+            } catch( IOException ex )
+            {
+                throw new UncheckedIOException( "Failed to get tile" + server + " " + r.getZoom() + " " + r.getX() + "," + r.getY(), ex );
             }
         }
-        else {
-            return TileCache.INSTANCE.getTile( server, r.getZoom(), r.getX(), r.getY(), tileLoaded, tileError );
+        else
+        {
+            try
+            {
+                Tile tile = TileCache.INSTANCE.getTile( server, r.getZoom(), r.getX(), r.getY() );
+                if( tileLoaded != null )
+                {
+                    tileLoaded.accept( tile );
+                }
+                return tile;
+            } catch( IOException ex )
+            {
+                //if(tileError!=null)tileError.accept( t, ex );
+                throw new UncheckedIOException( "Failed to get tile" + server + " " + r.getZoom() + " " + r.getX() + "," + r.getY(), ex );
+            }
         }
     }
 
@@ -90,10 +107,12 @@ public class TileRenderer
     {
         //Tile tile = TileCache.INSTANCE.getTile( server, r.getZoom(), r.getX(), r.getY(), tileLoaded, tileError );
         Tile tile = getTile( r );
-        if( tile != null && tile.isImagePresent() ) {
+        if( tile != null && tile.isImagePresent() )
+        {
             r.drawImage( tile.getImage() );
         }
-        else {
+        else
+        {
             super.accept( r );
         }
     }
