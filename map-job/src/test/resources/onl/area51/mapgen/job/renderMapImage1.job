@@ -1,9 +1,14 @@
-// Test map tile generation
-// This should generate a 1024x1024 map of the world
-// UK & Ire zoom 6, x 30..32, y 18..21
+## job mapgen.renderMapImage1
+## run every 2 minute timeout 5 minutes
+# Test map tile generation
+# This should generate a 1024x1024 map of the world
+# UK & Ire zoom 6, x 30..32, y 18..21
 
 baseLayer = new baseTileLayer("Open Street Map");
 
 image = createImage(1024,1024);
 renderMap(image,2,0,0,baseLayer);
-writeImage(image,"worldmap.png");
+
+file = new File( "worldmap.png" );
+//file = new File("cache://maps/misc/worldmap.png");
+writeImage(image,file);

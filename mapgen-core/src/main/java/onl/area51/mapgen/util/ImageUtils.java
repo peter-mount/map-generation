@@ -20,8 +20,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import javax.imageio.ImageIO;
@@ -34,48 +37,47 @@ import javax.imageio.ImageIO;
 public class ImageUtils
 {
 
-    /**
-     * Convenience method to call {@link ImageIO#read(java.io.InputStream)} from a {@link Path}.
-     * <p>
-     * @param path
-     *             <p>
-     * @return
-     *         <p>
-     * @throws IOException
-     */
-    public static BufferedImage readImage( Path path )
+    public static Path getPath( Object name )
             throws IOException
     {
-        try( InputStream is = Files.newInputStream( path, StandardOpenOption.READ ) ) {
-            return ImageIO.read( is );
+        Objects.requireNonNull( name );
+        if( name instanceof Path ) {
+            return (Path) name;
         }
+        if( name instanceof File ) {
+            return ((File) name).toPath();
+        }
+        String p = name.toString();
+        if( p.matches( "^.+?://.*?/.*$" ) ) {
+            try {
+                return Paths.get( new URI( p ) );
+            }
+            catch( URISyntaxException ex ) {
+                throw new IOException( ex );
+            }
+        }
+        return Paths.get( p );
     }
 
     public static BufferedImage readImage( Object o )
             throws IOException
     {
-        Objects.requireNonNull( o );
-        if( o instanceof Path ) {
-            return readImage( (Path) o );
+        try( InputStream is = Files.newInputStream( getPath( o ), StandardOpenOption.READ ) ) {
+            return ImageIO.read( is );
         }
-        if( o instanceof File ) {
-            return ImageIO.read( (File) o );
-        }
-        if( o instanceof InputStream ) {
-            return ImageIO.read( (InputStream) o );
-        }
-        return ImageIO.read( new File( o.toString() ) );
     }
 
-    public static File writeImage( BufferedImage image, Object name )
+    public static Path writeImage( BufferedImage image, Object name )
             throws IOException
     {
         Objects.requireNonNull( image, "Image is null" );
         Objects.requireNonNull( name, "Name is null" );
 
-        File file = name instanceof File ? (File) name : new File( Objects.toString( name ) );
-        writeImage( image, file );
-        return file;
+        Path path = getPath( name );
+        try( OutputStream os = Files.newOutputStream( path, StandardOpenOption.WRITE, StandardOpenOption.CREATE ) ) {
+            ImageIO.write( image, getFileType( path.getName( path.getNameCount() - 1 ).toString() ), os );
+        }
+        return path;
     }
 
     public static void writeImage( BufferedImage image, Object name, Object type )
@@ -85,30 +87,8 @@ public class ImageUtils
         Objects.requireNonNull( name, "Name is null" );
         Objects.requireNonNull( type, "Type is null" );
 
-        String t = type.toString();
-
-        if( name instanceof File ) {
-            ImageIO.write( image, t, (File) name );
-        }
-        else if( name instanceof OutputStream ) {
-            ImageIO.write( image, t, (OutputStream) name );
-        }
-        else {
-            ImageIO.write( image, t, new File( name.toString() ) );
-        }
-    }
-
-    public static void writeImage( BufferedImage image, File file )
-            throws IOException
-    {
-        ImageIO.write( image, getFileType( file.getName() ), file );
-    }
-
-    public static void writeImage( BufferedImage image, Path path )
-            throws IOException
-    {
-        try( OutputStream os = Files.newOutputStream( path, StandardOpenOption.WRITE, StandardOpenOption.CREATE ) ) {
-            ImageIO.write( image, getFileType( path.getName( path.getNameCount() - 1 ).toString() ), os );
+        try( OutputStream os = Files.newOutputStream( getPath( name ), StandardOpenOption.WRITE, StandardOpenOption.CREATE ) ) {
+            ImageIO.write( image, type.toString(), os );
         }
     }
 

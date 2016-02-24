@@ -16,9 +16,6 @@
 package onl.area51.mapgen.job;
 
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import uk.trainwatch.job.Scope;
 import uk.trainwatch.job.lang.expr.ExpressionOperation;
 
