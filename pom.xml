@@ -10,9 +10,11 @@
         Suite of utilities used to generate maps
     </description>
     <modules>
+        <module>map-app</module>
         <module>map-chart</module>
         <module>mapgen-core</module>
         <module>map-geotools</module>
+        <module>map-gis</module>
         <module>map-grib</module>
         <module>map-job</module>
         <module>map-swing</module>
