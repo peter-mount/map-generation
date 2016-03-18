@@ -1,23 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>    
+    <parent>
         <groupId>onl.area51.mapgen</groupId>
         <artifactId>map-generator</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    
     <groupId>onl.area51.mapgen</groupId>
-    <artifactId>map-app</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>map-docker</artifactId>
+    <packaging>pom</packaging>
+
+    <name>Map Generator Docker Image</name>
     
-    <packaging>jar</packaging>
-    
-    <name>Map Generator App</name>
-    
-    <description>
-        Docker based application which handles the generation of Maps in the cluster
-    </description>
+    <description>Docker Image for Map Generator</description>
     
     <properties>
         <docker.image.prefix>area51</docker.image.prefix>
@@ -29,19 +24,13 @@
         
         <dependency>
             <groupId>onl.area51.mapgen</groupId>
-            <artifactId>map-job</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>onl.area51.mapgen</groupId>
-            <artifactId>map-grib</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>onl.area51.mapgen</groupId>
             <artifactId>map-chart</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>onl.area51.mapgen</groupId>
+            <artifactId>mapgen-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         
@@ -53,98 +42,74 @@
         
         <dependency>
             <groupId>onl.area51.mapgen</groupId>
-            <artifactId>mapgen-core</artifactId>
+            <artifactId>map-job</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
-        <dependency>
-            <groupId>uk.trainwatch.job</groupId>
-            <artifactId>job-cluster</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
+        
         <dependency>
             <groupId>uk.trainwatch.job</groupId>
             <artifactId>job-language</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         
         <dependency>
-            <groupId>uk.trainwatch.job</groupId>
-            <artifactId>job-commons</artifactId>
+            <groupId>onl.area51.kernel</groupId>
+            <artifactId>kernel-core</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         
         <dependency>
-            <groupId>uk.trainwatch.job</groupId>
-            <artifactId>job-io</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>uk.trainwatch.job</groupId>
-            <artifactId>job-output</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>uk.trainwatch.job</groupId>
-            <artifactId>job-postgresql</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>uk.trainwatch.job</groupId>
-            <artifactId>job-transform</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>uk.trainwatch.brokers</groupId>
-            <artifactId>brokers-rabbitmq</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-    
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>9.3-1102-jdbc41</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>onl.area51.filesystem</groupId>
-            <artifactId>filesystem-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>onl.area51.filesystem</groupId>
-            <artifactId>filesystem-http</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>uk.trainwatch</groupId>
-            <artifactId>opendata-kernel</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <version>2.0-EDR1</version>
+            <scope>provided</scope>
         </dependency>
         
         <dependency>
             <groupId>uk.trainwatch</groupId>
             <artifactId>opendata-core</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         
         <dependency>
             <groupId>uk.trainwatch</groupId>
             <artifactId>opendata-config</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         
     </dependencies>
     
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}/classes</targetPath>
+            </resource>
+            <resource>
+                <directory>src/main/docker</directory>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}/docker.temp</targetPath>
+            </resource>
+        </resources>
+        
         <plugins>
+            
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -170,7 +135,11 @@
                 <version>0.2.3</version>
                 <configuration>
                     <imageName>${docker.image.prefix}/mapgenerator</imageName>
-                    <dockerDirectory>${basedir}/src/main/docker</dockerDirectory>
+                    <imageTags>
+                        <imageTag>latest</imageTag>
+                        <imageTag>${project.version}</imageTag>
+                    </imageTags>
+                    <dockerDirectory>${project.build.directory}/docker.temp</dockerDirectory>
                     <resources>
                         <resource>
                             <targetPath>/</targetPath>

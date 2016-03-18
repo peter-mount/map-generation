@@ -10,7 +10,6 @@
         Suite of utilities used to generate maps
     </description>
     <modules>
-        <module>map-app</module>
         <module>map-chart</module>
         <module>mapgen-core</module>
         <module>map-geotools</module>
@@ -18,6 +17,7 @@
         <module>map-grib</module>
         <module>map-job</module>
         <module>map-swing</module>
+        <module>map-docker</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
