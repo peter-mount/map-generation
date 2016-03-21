@@ -26,7 +26,7 @@ import uk.trainwatch.job.lang.expr.ExpressionOperation;
  *
  * @author peter
  */
-@MetaInfServices(Extension.class)
+@MetaInfServices( Extension.class )
 public class GeotoolsExtension
         implements Extension
 {
@@ -69,6 +69,14 @@ public class GeotoolsExtension
     public ExpressionOperation getExpression( String name, ExpressionOperation... args )
     {
         switch( name ) {
+
+            case "getCoordinateReferenceSystem":
+                switch( args.length ) {
+                    case 1:
+                        return ( s, a ) -> CrsOps.getCoordinateReferenceSystem( args[0], s );
+                    default:
+                        return null;
+                }
 
             case "createReferencedEnvelope":
                 return FeatureOps.createReferencedEnvelope( args );
@@ -134,6 +142,9 @@ public class GeotoolsExtension
 
             case "setMapBounds":
                 return FeatureOps.setMapBounds( args );
+
+            case "setMapProjection":
+                return FeatureOps.setMapProjection( args );
 
             default:
                 return null;

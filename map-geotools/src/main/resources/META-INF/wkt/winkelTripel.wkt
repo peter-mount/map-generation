@@ -1,0 +1,6 @@
+PROJCS["World_Winkel_Tripel_NGS",
+    GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["degree",0.01745329251994328]],
+    PROJECTION["Winkel_Tripel"],
+    PARAMETER["Standard_Parallel_1",40.0],
+    UNIT["Meter",1.0]
+]

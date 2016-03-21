@@ -1,0 +1,6 @@
+PROJCS["World_Robinson",
+    GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["degree",0.01745329251994328]],
+    PROJECTION["Robinson"],
+    UNIT["Meter",1.0]
+]
+

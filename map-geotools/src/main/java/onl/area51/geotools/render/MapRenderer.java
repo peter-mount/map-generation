@@ -369,12 +369,15 @@ public interface MapRenderer
                             renderer.setRendererHints( MapBuilder.builder()
                                     .add( StreamingRenderer.ADVANCED_PROJECTION_HANDLING_KEY, Boolean.TRUE )
                                     .add( StreamingRenderer.CONTINUOUS_MAP_WRAPPING, Boolean.TRUE )
+                                    //
+                                    //.add( StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY, StreamingRenderer.SCALE_ACCURATE )
+                                    //.add( StreamingRenderer.VECTOR_RENDERING_KEY, Boolean.TRUE )
+                                    //
                                     .build() );
-                            System.out.println(renderer.getRendererHints());
                             renderer.setMapContent( map );
                             renderer.paint( g, bounds, mapBounds );
                         } );
-                
+
                 // Now the final renderer
                 if( img != null ) {
                     return () -> draw( img, finalOp );

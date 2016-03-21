@@ -24,7 +24,6 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.grid.Grids;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
@@ -144,13 +143,9 @@ public class FeatureOps
     /**
      * Creates a new MapContent.
      * <p>
-     * If any arguments are included they are added to the content. Order is not important but can be one of:
-     * A layer
-     * Collection of layers,
-     * map viewport,
-     * CoordinateReferenceSystem,
-     * String. If the string starts with EPSG: then it's a CoordinateReferenceSystem otherwise the map title.
-     * important here.
+     * If any arguments are included they are added to the content. Order is not important but can be one of: A layer Collection
+     * of layers, map viewport, CoordinateReferenceSystem, String. If the string starts with EPSG: then it's a
+     * CoordinateReferenceSystem otherwise the map title. important here.
      * <p>
      * Note:
      *
@@ -166,7 +161,7 @@ public class FeatureOps
         else {
             return ( s, a ) -> {
                 CloseableMapContent map = new CloseableMapContent( s );
-                for( Object o: ExpressionOperation.invoke( exp, s ) ) {
+                for( Object o : ExpressionOperation.invoke( exp, s ) ) {
                     if( o instanceof Collection ) {
                         map.addLayers( (Collection<Layer>) o );
                     }
@@ -184,6 +179,12 @@ public class FeatureOps
                         if( v.startsWith( "EPSG:" ) ) {
                             map.getViewport().setCoordinateReferenceSystem( CRS.decode( v ) );
                         }
+                        else if( v.startsWith( "AREA51:" ) ) {
+                            map.getViewport()
+                                    .setCoordinateReferenceSystem( CrsOps.getCoordinateReferenceSystem( exp[0], s ) );
+//                                    .setCoordinateReferenceSystem( CRS.parseWKT( WKTFactory.INSTANCE.getWKT( v ) ) );
+
+                        }
                         else {
                             map.setTitle( v );
                         }
@@ -191,6 +192,23 @@ public class FeatureOps
                 }
                 return map;
             };
+        }
+    }
+
+    public static Statement setMapProjection( ExpressionOperation exp[] )
+    {
+        switch( exp.length ) {
+            case 2:
+                return ( s, a ) -> {
+                    String name = exp[1].getString( s );
+                    CoordinateReferenceSystem crs = WKTFactory.INSTANCE.getCrs( name );
+                    Objects.requireNonNull( crs, name + " not found" );
+                    MapContent map = exp[0].get( s );
+                    map.getViewport().setCoordinateReferenceSystem( crs );
+                };
+
+            default:
+                return null;
         }
     }
 
@@ -230,11 +248,11 @@ public class FeatureOps
                                                            DefaultGeographicCRS.WGS84 );
 
             case 5:
-                    return ( s, a ) -> new ReferencedEnvelope( exp[0].getDouble( s ),
-                                                               exp[2].getDouble( s ),
-                                                               exp[3].getDouble( s ),
-                                                               exp[1].getDouble( s ),
-                                                               CrsOps.getCoordinateReferenceSystem( exp[4], s ) );
+                return ( s, a ) -> new ReferencedEnvelope( exp[0].getDouble( s ),
+                                                           exp[2].getDouble( s ),
+                                                           exp[3].getDouble( s ),
+                                                           exp[1].getDouble( s ),
+                                                           CrsOps.getCoordinateReferenceSystem( exp[4], s ) );
 
             default:
                 return null;

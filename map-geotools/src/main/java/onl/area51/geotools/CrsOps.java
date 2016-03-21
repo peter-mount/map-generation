@@ -39,10 +39,8 @@ public class CrsOps
     /**
      * Returns a CoordinateReferenceSystem from an expression.
      * <p>
-     * expression result can be:
-     * CoordinateReferenceSystem, returned as is
-     * MapContent, returns the map's crs
-     * String, decodes the reference, eg "EPSG:5070"
+     * expression result can be: CoordinateReferenceSystem, returned as is MapContent, returns the map's crs String, decodes the
+     * reference, eg "EPSG:5070"
      *
      * @param exp
      * @param s
@@ -64,7 +62,7 @@ public class CrsOps
         if( o instanceof MapContent ) {
             return ((MapContent) o).getCoordinateReferenceSystem();
         }
-        return CRS.decode( o.toString() );
+        return WKTFactory.INSTANCE.getCrs( o.toString() );
     }
 
     public static void setCrs( MapContent map, String crs )
@@ -91,7 +89,7 @@ public class CrsOps
     {
         CoordinateReferenceSystem crs = map.getCoordinateReferenceSystem();
         Extent crsExtent = crs.getDomainOfValidity();
-        for( GeographicExtent element: crsExtent.getGeographicElements() ) {
+        for( GeographicExtent element : crsExtent.getGeographicElements() ) {
             if( element instanceof GeographicBoundingBox ) {
                 GeographicBoundingBox bounds = (GeographicBoundingBox) element;
                 ReferencedEnvelope bbox = new ReferencedEnvelope(
@@ -107,7 +105,8 @@ public class CrsOps
         }
     }
 
-    public static void clipMap( MapContent map, double southBoundLatitude, double northBoundLatitude, double westBoundLongitude, double eastBoundLongitude )
+    public static void clipMap( MapContent map, double southBoundLatitude, double northBoundLatitude, double westBoundLongitude,
+                                double eastBoundLongitude )
             throws TransformException,
                    FactoryException
     {
@@ -115,7 +114,8 @@ public class CrsOps
     }
 
     public static void clipMap( MapContent map,
-                                double southBoundLatitude, double northBoundLatitude, double westBoundLongitude, double eastBoundLongitude,
+                                double southBoundLatitude, double northBoundLatitude, double westBoundLongitude,
+                                double eastBoundLongitude,
                                 CoordinateReferenceSystem boundsCrs )
             throws TransformException,
                    FactoryException
