@@ -1,0 +1,43 @@
+// Generates a map of the world using Winkel Tripel projection.
+// This projection is used a lot in world atlas's
+
+mapBounds = createReferencedEnvelope( -180,-90, 180,90);
+
+map = new mapContent();
+setMapProjection(map,"winkelTripel");
+
+// The oceans
+oceanSource = getFeatureSource( "/usr/local/shape/world_oceans/World_Seas.shp" );
+oceanFill = createFill( "cyan", 0.2 );
+oceanStyle = createPolygonStyle( oceanStroke, oceanFill );
+layer = new featureLayer( oceanSource, oceanStyle );
+map.addLayer( layer );
+
+// The land/countries
+worldSource = getFeatureSource( "/usr/local/shape/50m_cultural/ne_50m_admin_0_countries.shp" );
+stroke = createStroke( "black", 1);
+landFill = createFill( "green", 0.5 );
+landStyle = createPolygonStyle( stroke, landFill );
+layer = new featureLayer( worldSource, landStyle );
+map.addLayer( layer );
+
+// The Lat/Lon grid
+gridStyle = createLineStyle( stroke );
+grid = new featureLayer( createLineGrid( mapBounds,
+    new orthoLineDef( "VERTICAL", 2, 10 ),
+    //new orthoLineDef( "VERTICAL", 2, 2 ),
+    new orthoLineDef( "HORIZONTAL", 2, 10 )//,
+    //new orthoLineDef( "HORIZONTAL", 2, 2 )
+    ),
+    gridStyle );
+map.addLayer( grid );
+
+setMapBounds( map, mapBounds );
+
+// 700px wide map
+size = getMapBounds(map,700);
+renderMapContent( "world2_700.png", map, "white", "black", size);
+
+// larger 1280px wide map
+size = getMapBounds(map,1280);
+renderMapContent( "world2_1280.png", map, "white", "black", size);
