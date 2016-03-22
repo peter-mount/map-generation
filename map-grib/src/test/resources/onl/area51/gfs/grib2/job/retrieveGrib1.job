@@ -1,9 +1,14 @@
+## job mapgen.retrieveGrib
+## run once at 19:23
+dir = new File( "cache://maps/grib" );
+file = retrieveGrib( dir, 0 );
+
+## run at 18:00 timeout 30 hour retry 1 hour max retries 3
+## run at 04:00 timeout 30 hour retry 1 hour max retries 3
 // Test retrieval of current grib file
 
 /*
  * Note: This is usually disabled due to it connecting to NOAA every time it's run
-*/
-/*
     log "Retrieve latest grib";
     file = retrieveGrib( 0 );
     log file;

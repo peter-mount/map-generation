@@ -17,11 +17,11 @@ package onl.area51.gfs.grib2.job;
 
 import static java.time.temporal.ChronoField.*;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -171,25 +171,25 @@ public class GribRetriever
         LOG.log( Level.INFO, () -> "Now in directory " + pwd );
     }
 
-    public File retrieveOffset( int offset )
+    public Path retrieveOffset( int offset )
             throws IOException
     {
         return retrieveOffset( null, offset, false );
     }
 
-    public File retrieveOffset( File dir, int offset )
+    public Path retrieveOffset( Path dir, int offset )
             throws IOException
     {
         return retrieveOffset( dir, offset, false );
     }
 
-    public File retrieveOffset( int offset, boolean forceRetrive )
+    public Path retrieveOffset( int offset, boolean forceRetrive )
             throws IOException
     {
         return retrieveOffset( null, offset, forceRetrive );
     }
 
-    public File retrieveOffset( File dir, int offset, boolean forceRetrive )
+    public Path retrieveOffset( Path dir, int offset, boolean forceRetrive )
             throws IOException
     {
         LOG.log( Level.INFO, () -> "Looking for GFS file for offset " + offset );
@@ -203,13 +203,13 @@ public class GribRetriever
                 .findAny()
                 .orElseThrow( () -> new FileNotFoundException( "Unable to find GFS file for " + offset ) );
 
-        File file = new File( dir, remote.getName() );
+        Path file = dir.resolve( remote.getName() );
 
-        if( forceRetrive || client.isFileRetrievable( file, remote ) ) {
+        if( forceRetrive || client.isPathRetrievable( file, remote ) ) {
             LOG.log( Level.INFO, () -> "Retrieving " + remote.getSize() + " bytes to " + file );
 
             try( InputStream is = client.retrieveFileStream( remote ) ) {
-                Files.copy( is, file.toPath(), StandardCopyOption.REPLACE_EXISTING );
+                Files.copy( is, file, StandardCopyOption.REPLACE_EXISTING );
             }
 
             LOG.log( Level.INFO, () -> "Retrieved " + remote.getSize() + " bytes" );

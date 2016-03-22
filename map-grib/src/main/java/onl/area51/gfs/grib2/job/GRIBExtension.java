@@ -15,7 +15,7 @@
  */
 package onl.area51.gfs.grib2.job;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.stream.Collectors;
 import onl.area51.gfs.grib2.Grib2;
 import onl.area51.gfs.grib2.Grib2Filters;
@@ -23,6 +23,7 @@ import static onl.area51.gfs.grib2.job.MiscOps.*;
 import onl.area51.gfs.grib2.layer.Grib2Layer;
 import org.kohsuke.MetaInfServices;
 import uk.trainwatch.job.ext.Extension;
+import uk.trainwatch.job.io.FileOp;
 import uk.trainwatch.job.lang.expr.ExpressionOperation;
 
 /**
@@ -90,7 +91,7 @@ public class GRIBExtension
                     // file = retrieveGrib( file, hourOffset );
                     case "retrieveGrib":
                         return ( s, a ) -> {
-                            File file = getFile( args[0], s );
+                            Path file = FileOp.getPath( args[0], s );
                             int offset = args[1].getInt( s );
                             try( GribRetriever r = new GribRetriever() ) {
                                 r.selectLatestRun();
@@ -102,7 +103,7 @@ public class GRIBExtension
                     // file = retrieveGribForced( file, hourOffset );
                     case "retrieveGribForced":
                         return ( s, a ) -> {
-                            File file = getFile( args[0], s );
+                            Path file = FileOp.getPath( args[0], s );
                             int offset = args[1].getInt( s );
                             try( GribRetriever r = new GribRetriever() ) {
                                 r.selectLatestRun();
@@ -121,7 +122,7 @@ public class GRIBExtension
                     // file = retrieveGrib( dir, hourOffset, force );
                     case "retrieveGrib":
                         return ( s, a ) -> {
-                            File file = getFile( args[0], s );
+                            Path file = FileOp.getPath( args[0], s );
                             int offset = args[1].getInt( s );
                             boolean force = args[2].isTrue( s );
                             try( GribRetriever r = new GribRetriever() ) {
