@@ -15,9 +15,6 @@
  */
 package onl.area51.geotools.cdf;
 
-import java.util.Arrays;
-import onl.area51.geotools.MiscOps;
-import org.geotools.coverage.io.netcdf.NetCDFReader;
 import org.kohsuke.MetaInfServices;
 import uk.trainwatch.job.ext.Extension;
 import uk.trainwatch.job.lang.expr.ExpressionOperation;

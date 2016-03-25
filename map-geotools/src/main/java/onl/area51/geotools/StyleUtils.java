@@ -23,6 +23,7 @@ import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Graphic;
 import org.geotools.styling.Mark;
+import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.SLD;
@@ -106,9 +107,11 @@ public class StyleUtils
         ContrastEnhancement ce = STYLE_FACTORY.contrastEnhancement(FILTER_FACTORY.literal( 1.0 ), ContrastMethod.NORMALIZE );
         SelectedChannelType sct = STYLE_FACTORY.createSelectedChannelType( String.valueOf( band ), ce );
 
-        RasterSymbolizer sym = STYLE_FACTORY.getDefaultRasterSymbolizer();
+        //RasterSymbolizer sym = STYLE_FACTORY.getDefaultRasterSymbolizer();
+        PointSymbolizer sym = STYLE_FACTORY.createPointSymbolizer();
+        
         ChannelSelection sel = STYLE_FACTORY.channelSelection( sct );
-        sym.setChannelSelection( sel );
+        //sym.setChannelSelection( sel );
 
         return createStyle( sym );
 //        return SLD.wrapSymbolizers( sym );

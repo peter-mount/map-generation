@@ -1,0 +1,47 @@
+// Draw a map of Kent, England from Ordnance Survey OSGB VectorMap District
+// data stored in a PostGIS database. This map will be 1024 pixels wide with
+// TidalWater, foreshore and surface water features plotted.
+//
+// It shows how much water there is in the county.
+//
+
+map = new mapContent();
+
+props = new Map();
+props.dbtype="postgis";
+props.host="postgis";
+props.port=5432;
+props.schema="public";
+props.database="osgb";
+props.user="postgres";
+props.passwd="password";
+
+source = getFeatureSource( props, "tidalwater" );
+stroke = createStroke( "#D5F4F8", 1);
+fill = createFill( "#D5F4F8", 1 );
+style = createPolygonStyle( stroke, fill );
+layer = new featureLayer( source, style );
+map.addLayer( layer );
+
+source = getFeatureSource( props, "foreshore" );
+stroke = createStroke( "#E6EBE4", 1);
+style = createLineStyle( stroke );
+layer = new featureLayer( source, style );
+map.addLayer( layer );
+
+source = getFeatureSource( props, "surfacewater_area" );
+stroke = createStroke( "#00A9CA", 1);
+fill = createFill( "#D5F4F8", 0.5 );
+style = createPolygonStyle( stroke, fill );
+layer = new featureLayer( source, style );
+map.addLayer( layer );
+
+source = getFeatureSource( props, "surfacewater_line" );
+stroke = createStroke( "#00A9CA", 0.2);
+style = createLineStyle( stroke );
+layer = new featureLayer( source, style );
+map.addLayer( layer );
+
+setMapBounds( map, 0, 50.65, 1.5, 51.65 );
+size = getMapBounds(map,1024);
+renderMapContent( "postgis1.png", map, "white", "black", size);

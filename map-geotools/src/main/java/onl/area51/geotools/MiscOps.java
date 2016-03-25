@@ -22,6 +22,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import onl.area51.mapgen.util.ColorMap;
 import onl.area51.mapgen.util.ColourType;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
@@ -110,6 +111,12 @@ public class MiscOps
         if( o instanceof Color ) {
             return (Color) o;
         }
+        String c = o.toString();
+
+        if( c.startsWith( "#" ) ) {
+            return ColourType.decodeHex( c );
+        }
+
         return ColourType.lookup( o.toString() ).getColor();
     }
 

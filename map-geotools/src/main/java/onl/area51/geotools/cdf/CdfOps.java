@@ -17,9 +17,12 @@ package onl.area51.geotools.cdf;
 
 import java.util.Arrays;
 import onl.area51.geotools.MiscOps;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.io.netcdf.NetCDFReader;
+import org.geotools.coverage.processing.Operations;
 import org.geotools.factory.Hints;
 import org.geotools.map.MapContent;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import uk.trainwatch.job.lang.expr.ExpressionOperation;
 
 /**
@@ -37,10 +40,18 @@ public class CdfOps
 
             case 2:
                 return ( s, a ) -> {
-                    MapContent map = exp[1].get( s );
-                    return new CloseableNetCDFReader( s, MiscOps.getFile( exp[0], s ),
-                                                      new Hints( Hints.CRS, map.getViewport().getCoordinateReferenceSystem() )
-                    );
+                    Object o = exp[1].get( s );
+                    CoordinateReferenceSystem crs = null;
+                    if( o instanceof CoordinateReferenceSystem ) {
+                        crs = (CoordinateReferenceSystem) o;
+                    }
+                    else if( o instanceof MapContent ) {
+                        crs = ((MapContent) o).getViewport().getCoordinateReferenceSystem();
+                    }
+                    else {
+                        throw new UnsupportedOperationException();
+                    }
+                    return new CloseableNetCDFReader( s, MiscOps.getFile( exp[0], s ), new Hints( Hints.CRS, crs ) );
                 };
 
             default:
@@ -63,4 +74,5 @@ public class CdfOps
         }
         return null;
     }
+
 }

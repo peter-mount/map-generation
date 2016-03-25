@@ -8,4 +8,5 @@ try( r = new cdfReader( "/home/peter/gfs.grib" ) ) {
 
     temp = cdfGetGrid( r, "Temperature_surface" );
     
+   // grid2shape( temp, "temp.shp" );
 }

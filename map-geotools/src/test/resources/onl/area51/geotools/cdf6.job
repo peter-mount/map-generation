@@ -1,11 +1,15 @@
 // Generates a map of the world using Winkel Tripel projection.
 // This projection is used a lot in world atlas's
 
-//mapBounds = createReferencedEnvelope( -180,-90, 180,90);
-mapBounds = createReferencedEnvelope( -180,-89, 180,89);
+mapProjection = "winkelTripel";
+//mapProjection = "robinson";
+//mapProjection = "google";
+
+mapBounds = createReferencedEnvelope( -180,-90, 180,90);
+//mapBounds = createReferencedEnvelope( -180,-90, 360,90);
 
 map = new mapContent();
-setMapProjection(map,"winkelTripel");
+//setMapProjection(map,mapProjection);
 
 // The oceans
 oceanSource = getFeatureSource( "/usr/local/shape/world_oceans/World_Seas.shp" );
@@ -22,6 +26,26 @@ landStyle = createPolygonStyle( stroke, landFill );
 layer = new featureLayer( worldSource, landStyle );
 map.addLayer( layer );
 
+// CDF layer
+try( r = new cdfReader( "/home/peter/gfs.grib" ) ) {
+    temp = cdfGetGrid( r, "Temperature_surface" );
+    tempStyle = createGreyscaleStyle(  );
+
+    // As this is 0..360 add 2 layers, one for that
+    tempLayer = new gridCoverageLayer( temp, tempStyle );
+    map.addLayer( tempLayer );
+
+    // One corrected to -360..0
+//    tempLayer = new gridCoverageLayer( correctGridCoverageHemisphere(temp), tempStyle );
+//    map.addLayer( tempLayer );
+}
+
+// Add world layer over the grib data, but as a grid
+layer = new featureLayer( worldSource, gridStyle );
+map.addLayer( layer );
+/*
+*/
+
 // The Lat/Lon grid
 gridStyle = createLineStyle( stroke );
 grid = new featureLayer( createLineGrid( mapBounds,
@@ -37,8 +61,8 @@ setMapBounds( map, mapBounds );
 
 // 700px wide map
 size = getMapBounds(map,700);
-renderMapContent( "world2_700.png", map, "white", "black", size);
+renderMapContent( "cdf6_700.png", map, "white", "black", size);
 
 // larger 1280px wide map
 size = getMapBounds(map,1280);
-renderMapContent( "world2_1280.png", map, "white", "black", size);
+renderMapContent( "cdf6_1280.png", map, "white", "black", size);

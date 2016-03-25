@@ -179,12 +179,6 @@ public class FeatureOps
                         if( v.startsWith( "EPSG:" ) ) {
                             map.getViewport().setCoordinateReferenceSystem( CRS.decode( v ) );
                         }
-                        else if( v.startsWith( "AREA51:" ) ) {
-                            map.getViewport()
-                                    .setCoordinateReferenceSystem( CrsOps.getCoordinateReferenceSystem( exp[0], s ) );
-//                                    .setCoordinateReferenceSystem( CRS.parseWKT( WKTFactory.INSTANCE.getWKT( v ) ) );
-
-                        }
                         else {
                             map.setTitle( v );
                         }

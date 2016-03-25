@@ -67,6 +67,38 @@ public enum ColourType
         return TYPES.getOrDefault( n, null );
     }
 
+    /**
+     * Decode a colour of the format RGB, #RGB, RRGGBB or #RRGGBB
+     *
+     * @param s
+     *
+     * @return
+     */
+    public static Color decodeHex( String s )
+    {
+        String c = s.startsWith( "#" ) ? s.substring( 1 ) : s;
+        switch( c.length() ) {
+            // #rgb
+            case 3: {
+                int r = Integer.parseInt( c.substring( 0, 1 ), 16 );
+                int g = Integer.parseInt( c.substring( 1, 2 ), 16 );
+                int b = Integer.parseInt( c.substring( 2, 3 ), 16 );
+                return new Color( r << 8 + r, g << 8 + g, b << 8 + b );
+            }
+
+            // #rrggbb
+            case 6:
+                return new Color(
+                        Integer.parseInt( c.substring( 0, 2 ), 16 ),
+                        Integer.parseInt( c.substring( 2, 4 ), 16 ),
+                        Integer.parseInt( c.substring( 4, 6 ), 16 )
+                );
+
+            default:
+                throw new IllegalArgumentException( "Invalid colour " + c );
+        }
+    }
+
     private ColourType( Color colour )
     {
         this.colour = colour;

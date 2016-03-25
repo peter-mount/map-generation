@@ -13,7 +13,7 @@
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <geotools.version>13.5</geotools.version>
+        <geotools.version>14.3</geotools.version>
     </properties>
     
     <build>
@@ -107,6 +107,12 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-svg</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.geotools.jdbc</groupId>
+            <artifactId>gt-jdbc-postgis</artifactId>
             <version>${geotools.version}</version>
         </dependency>
         

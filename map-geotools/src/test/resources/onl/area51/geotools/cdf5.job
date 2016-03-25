@@ -21,9 +21,13 @@ log "Opening gfs";
 try( r = new cdfReader( "/home/peter/gfs.grib" ) ) {
     temp = cdfGetGrid( r, "Temperature_surface" );
     tempStyle = createGreyscaleStyle(  );
-    //tempLayer = new gridCoverageLayer( map, temp, tempStyle );
+
     tempLayer = new gridCoverageLayer( temp, tempStyle );
+    //tempLayer = new gridCoverageLayer( correctGridCoverageHemisphere(temp,true), tempStyle );
     map.addLayer( tempLayer );
+
+//    tempLayer = new gridCoverageLayer( correctGridCoverageHemisphere(temp,false), tempStyle );
+//    map.addLayer( tempLayer );
 }
 
     layer = new featureLayer( worldSource, style );

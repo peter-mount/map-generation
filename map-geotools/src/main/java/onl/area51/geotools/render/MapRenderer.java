@@ -211,13 +211,21 @@ public interface MapRenderer
                 }
             }
             else {
-                ColourType ct = ColourType.lookupOrNull( o.toString() );
-                if( ct != null ) {
+                Color col;
+                String c = o.toString();
+                if( c.startsWith( "#" ) ) {
+                    col = ColourType.decodeHex( c );
+                }
+                else {
+                    ColourType ct = ColourType.lookupOrNull( c );
+                    col = ct == null ? null : ct.getColor();
+                }
+                if( col != null ) {
                     if( !isBackgroundSet() ) {
-                        backgroundType( ct );
+                        background( col );
                     }
                     else if( !isForegroundSet() ) {
-                        foregroundType( ct );
+                        foreground( col );
                     }
                 }
                 else {

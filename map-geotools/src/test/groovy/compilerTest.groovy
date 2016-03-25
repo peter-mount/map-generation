@@ -57,7 +57,7 @@ tests.each {
                 name ->
                 out.println "";
                 //out.println "\t@Test( timeout = 3000L )";
-                out.println "\t@Test( timeout = 300000L )";
+                out.println "\t@Test( timeout = 1200000L )";
                 out.println "\tpublic void " + name + "()";
                 out.println "\t\tthrows Throwable";
                 out.println "\t{";

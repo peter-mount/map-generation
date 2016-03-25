@@ -15,6 +15,8 @@
  */
 package onl.area51.geotools;
 
+import java.io.File;
+import onl.area51.geotools.postgis.PostGISOps;
 import org.geotools.styling.SLD;
 import org.kohsuke.MetaInfServices;
 import uk.trainwatch.job.ext.Extension;
@@ -26,7 +28,7 @@ import uk.trainwatch.job.lang.expr.ExpressionOperation;
  *
  * @author peter
  */
-@MetaInfServices( Extension.class )
+@MetaInfServices(Extension.class)
 public class GeotoolsExtension
         implements Extension
 {
@@ -70,6 +72,26 @@ public class GeotoolsExtension
     {
         switch( name ) {
 
+            case "grid2shape":
+                switch( args.length ) {
+                    case 1:
+                        return ( s, a ) -> Grid2DOps.toShape( args[0].get( s ), File.createTempFile( "grid", ".shp" ) );
+                    case 2:
+                        return ( s, a ) -> Grid2DOps.toShape( args[0].get( s ), MiscOps.getFile( args[1], s ) );
+                    default:
+                        return null;
+                }
+
+            case "correctGridCoverageHemisphere":
+                switch( args.length ) {
+                    case 1:
+                        return ( s, a ) -> Grid2DOps.correctGrid( args[0].get( s ), true );
+                    case 2:
+                        return ( s, a ) -> Grid2DOps.correctGrid( args[0].get( s ), args[1].isTrue( s ) );
+                    default:
+                        return null;
+                }
+
             case "getCoordinateReferenceSystem":
                 switch( args.length ) {
                     case 1:
@@ -80,6 +102,9 @@ public class GeotoolsExtension
 
             case "createReferencedEnvelope":
                 return FeatureOps.createReferencedEnvelope( args );
+
+            case "getDataStore":
+                return PostGISOps.getDataStore( args );
 
             case "createFill":
                 return StyleOps.createFill( args );
@@ -122,7 +147,16 @@ public class GeotoolsExtension
                 return ( s, a ) -> MiscOps.getFileDataStore( args[0], s ).getFeatureReader();
 
             case "getFeatureSource":
-                return ( s, a ) -> MiscOps.getFileDataStore( args[0], s ).getFeatureSource();
+                switch( args.length ) {
+                    case 1:
+                        return ( s, a ) -> MiscOps.getFileDataStore( args[0], s ).getFeatureSource();
+
+                    case 2:
+                        return ( s, a ) -> PostGISOps.getFeatureSource( args[0], args[1], s );
+
+                    default:
+                        return null;
+                }
 
             case "getMapBounds":
                 return RenderOps.getMapBounds( args );
