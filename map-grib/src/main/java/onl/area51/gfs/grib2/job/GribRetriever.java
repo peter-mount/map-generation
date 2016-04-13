@@ -90,16 +90,16 @@ public class GribRetriever
                 .logger( LOG::info )
                 .build();
 
-        try {
-            LOG.log( Level.INFO, "Connecting to NOAA..." );
-            client.connect( SERVER );
-            client.login( "anonymous", "gribuser@" );
-        }
-        catch( IOException ex ) {
-            // Make certain the client is closed correctly
-            client.close();
-            throw ex;
-        }
+//        try {
+//            LOG.log( Level.INFO, "Connecting to NOAA..." );
+//            client.connect( SERVER );
+//            client.login( "anonymous", "gribuser@" );
+//        }
+//        catch( IOException ex ) {
+//            // Make certain the client is closed correctly
+//            client.close();
+//            throw ex;
+//        }
     }
 
     /**
